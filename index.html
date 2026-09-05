@@ -46,6 +46,7 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .block { display: block; }
 .border { border-width: 1px; border-style: solid; }
 .border-2 { border-width: 2px; border-style: solid; }
+.border-\[\#1B1F24\] { border-color: #1B1F24; }
 .border-\[\#C0392B\] { border-color: #C0392B; }
 .border-\[\#D8D4C8\] { border-color: #D8D4C8; }
 .border-\[\#E2DFD3\] { border-color: #E2DFD3; }
@@ -88,6 +89,7 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .h-4 { height: 1rem; }
 .h-5 { height: 1.25rem; }
 .h-6 { height: 1.5rem; }
+.h-7 { height: 7rem; }
 .h-8 { height: 2rem; }
 .h-\[110px\] { height: 110px; }
 .h-\[140px\] { height: 140px; }
@@ -98,9 +100,9 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .h-auto { height: auto; }
 .hover\:bg-\[\#333\]:hover { background-color: #333; }
 .hover\:bg-\[\#F0EEE4\]:hover { background-color: #F0EEE4; }
-.hover\:bg-\[\#d6852e\]:hover { background-color: #d6852e; }
 .hover\:border-\[\#E8963B\]:hover { border-color: #E8963B; }
 .hover\:text-\[\#1B1F24\]:hover { color: #1B1F24; }
+.hover\:text-\[\#5B6472\]:hover { color: #5B6472; }
 .hover\:text-\[\#C0392B\]:hover { color: #C0392B; }
 .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
 .items-center { align-items: center; }
@@ -186,6 +188,7 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .text-\[\#8A6438\] { color: #8A6438; }
 .text-\[\#8A8F98\] { color: #8A8F98; }
 .text-\[\#8FD3FFAA\] { color: #8FD3FFAA; }
+.text-\[\#B8BEC7\] { color: #B8BEC7; }
 .text-\[\#B96A16\] { color: #B96A16; }
 .text-\[\#C0392B\] { color: #C0392B; }
 .text-\[\#D8D4C8\] { color: #D8D4C8; }
@@ -202,14 +205,17 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .text-\[17px\] { font-size: 17px; }
 .text-\[18px\] { font-size: 18px; }
 .text-\[19px\] { font-size: 19px; }
+.text-\[20px\] { font-size: 20px; }
 .text-\[26px\] { font-size: 26px; }
 .text-center { text-align: center; }
 .text-left { text-align: left; }
 .text-right { text-align: right; }
 .text-white { color: #fff; }
+.top-1 { top: 0.25rem; }
 .top-1\/2 { top: 50%; }
 .tracking-\[0\.2em\] { letter-spacing: 0.2em; }
 .tracking-wide { letter-spacing: 0.025em; }
+.transition-all { transition-property: all; transition-duration: 150ms; }
 .transition-colors { transition-property: color, background-color, border-color; transition-duration: 150ms; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .underline { text-decoration: underline; }
@@ -341,6 +347,7 @@ const Search = makeIcon(["M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z", "M21 21l-4.35-
 const Eye = makeIcon(["M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z", "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"]);
 const EyeOff = makeIcon(["M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a20.3 20.3 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 8 11 8a20.3 20.3 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24", "M1 1l22 22"]);
 const Copy = makeIcon(["M9 9h11v11H9z", "M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"]);
+const Pencil = makeIcon(["M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z", "M15 5l4 4"]);
 
 const HEROAL_FAVORITEN = ["17", "20", "53", "63", "66", "44", "10", "16", "22", "84"];
 const HEROAL_FARBEN = [
@@ -831,10 +838,15 @@ function loadProduktPreise(setProduktPreise) {
     }).catch(() => { setProduktPreise(DEFAULT_PRODUKT_PREISE); });
 }
 function saveProduktPreise(produktPreise) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("produktpreise_v1", JSON.stringify(produktPreise)).catch(() => { }); }
-function Num({ label, value, onChange, unit, step = 1, min = 1, className = "" }) {
-    const [text, setText] = useState(String(value));
-    useEffect(() => { setText(String(value)); }, [value]);
+function Num({ label, value, onChange, unit, step = 1, min = 1, className = "", allowEmpty = false }) {
+    const [text, setText] = useState(value === null || value === undefined ? "" : String(value));
+    useEffect(() => { setText(value === null || value === undefined ? "" : String(value)); }, [value]);
     const commit = () => {
+        if (allowEmpty && text.trim() === "") {
+            if (value !== null)
+                onChange(null);
+            return;
+        }
         const parsed = parseFloat(text.replace(",", "."));
         const clamped = isNaN(parsed) || parsed < min ? min : parsed;
         setText(String(clamped));
@@ -844,7 +856,7 @@ function Num({ label, value, onChange, unit, step = 1, min = 1, className = "" }
     return (React.createElement("label", { className: `flex flex-col gap-1 ${className}` },
         React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, label),
         React.createElement("div", { className: "flex items-center border border-[#D8D4C8] rounded-md bg-white focus-within:border-[#E8963B] transition-colors" },
-            React.createElement("input", { type: "number", value: text, step: step, onChange: (e) => setText(e.target.value), onBlur: commit, onKeyDown: (e) => { if (e.key === "Enter")
+            React.createElement("input", { type: "number", value: text, step: step, placeholder: allowEmpty ? "—" : undefined, onChange: (e) => setText(e.target.value), onBlur: commit, onKeyDown: (e) => { if (e.key === "Enter")
                     e.currentTarget.blur(); }, className: "w-full px-2.5 py-1.5 text-[15px] font-['IBM_Plex_Mono'] text-[#1B1F24] outline-none bg-transparent rounded-md" }),
             unit && React.createElement("span", { className: "pr-2.5 text-[12px] text-[#8A8F98] font-['IBM_Plex_Mono']" }, unit))));
 }
@@ -1047,7 +1059,7 @@ function ColorModal({ open, onClose, current, onSelect, customRal, onCustomRal }
                             " ",
                             r.name))))))))))));
 }
-function RollladenKonfigurator({ onZurueck }) {
+function RollladenKonfigurator({ onZurueck, editRequest, onEditConsumed, defaultKunde, einstellungen }) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     const [tab, setTab] = useState("konfiguration");
     const [params, setParams] = useState(DEFAULT_PARAMS);
@@ -1057,15 +1069,16 @@ function RollladenKonfigurator({ onZurueck }) {
     const [colorTarget, setColorTarget] = useState(null); // null | 'kasten' | 'schiene' | 'endleiste'
     const [kostenSichtbar, setKostenSichtbar] = useState(false); // Deine Kosten & Marge — standardmäßig ausgeblendet (Kundenansicht)
     const [diagramMode, setDiagramMode] = useState("2d");
+    const [bearbeitungsId, setBearbeitungsId] = useState(null);
     const [ausfuehrung, setAusfuehrung] = useState("einteilig"); // einteilig | zweiteilig
-    const [breite, setBreite] = useState(1400); // Elementbreite EB (einteilig)
-    const [a1, setA1] = useState(700); // Achsmaß 1 (zweiteilig)
-    const [a2, setA2] = useState(700); // Achsmaß 2 (zweiteilig)
-    const [hoehe, setHoehe] = useState(1600); // Elementhöhe EH
-    const [system, setSystem] = useState("FME");
+    const [breite, setBreite] = useState(null); // Elementbreite EB (einteilig)
+    const [a1, setA1] = useState(null); // Achsmaß 1 (zweiteilig)
+    const [a2, setA2] = useState(null); // Achsmaß 2 (zweiteilig)
+    const [hoehe, setHoehe] = useState(null); // Elementhöhe EH
+    const [system, setSystem] = useState("FMR");
     const [kh, setKh] = useState(165);
     const [khAutomatik, setKhAutomatik] = useState(true);
-    const [blk, setBlk] = useState("90");
+    const [blk, setBlk] = useState("20");
     const [heroalNr, setHeroalNr] = useState("53");
     const [customRal, setCustomRal] = useState("7016");
     const [behangWieKasten, setBehangWieKasten] = useState(true);
@@ -1089,9 +1102,99 @@ function RollladenKonfigurator({ onZurueck }) {
     const [austrittPos, setAustrittPos] = useState("1");
     const [insektenschutz, setInsektenschutz] = useState(false);
     const [notentriegelung, setNotentriegelung] = useState(false);
-    const [kunde, setKunde] = useState("");
+    const [kunde, setKunde] = useState(defaultKunde || "");
     const [menge, setMenge] = useState(1);
     useEffect(() => { loadParams(setParams); loadList(setList); loadProduktPreise(setProduktPreise); }, []);
+    const zuruecksetzen = () => {
+        setAusfuehrung("einteilig");
+        setBreite(null);
+        setA1(null);
+        setA2(null);
+        setHoehe(null);
+        setSystem("FMR");
+        setKh(165);
+        setKhAutomatik(true);
+        setBlk("20");
+        setHeroalNr("53");
+        setCustomRal("7016");
+        setBehangWieKasten(true);
+        setBehangNr("53");
+        setBehangCustomRal("7016");
+        setSchieneTyp("htf-drp");
+        setSchieneWieKasten(true);
+        setSchieneNr("53");
+        setSchieneCustomRal("7016");
+        setBehangTyp("rs37");
+        setEndleisteTyp("endleiste45");
+        setEndleisteManuell(false);
+        setEndleisteWieKasten(true);
+        setEndleisteNr("53");
+        setEndleisteCustomRal("7016");
+        setWelleAutomatik(true);
+        setWelleManuell("40");
+        setBedienung("motor");
+        setMotorHersteller("somfy");
+        setAustrittSeite("rechts");
+        setAustrittPos("1");
+        setInsektenschutz(false);
+        setNotentriegelung(false);
+        setMenge(1);
+        setBearbeitungsId(null);
+    };
+    const ladeZumBearbeiten = (item) => {
+        var _a;
+        const c = item.config;
+        if (!c) {
+            setBearbeitungsId(item.id);
+            setTab("konfiguration");
+            return;
+        } // ältere Positionen ohne Config-Snapshot
+        setAusfuehrung(c.ausfuehrung);
+        setBreite(c.breite);
+        setA1(c.a1);
+        setA2(c.a2);
+        setHoehe(c.hoehe);
+        setSystem(c.system);
+        setKh(c.kh);
+        setKhAutomatik(c.khAutomatik);
+        setBlk(c.blk);
+        setHeroalNr(c.heroalNr);
+        setCustomRal(c.customRal);
+        setBehangWieKasten(c.behangWieKasten);
+        setBehangNr(c.behangNr);
+        setBehangCustomRal(c.behangCustomRal);
+        setSchieneTyp(c.schieneTyp);
+        setSchieneWieKasten(c.schieneWieKasten);
+        setSchieneNr(c.schieneNr);
+        setSchieneCustomRal(c.schieneCustomRal);
+        setBehangTyp(c.behangTyp);
+        setEndleisteTyp(c.endleisteTyp);
+        setEndleisteManuell(c.endleisteManuell);
+        setEndleisteWieKasten(c.endleisteWieKasten);
+        setEndleisteNr(c.endleisteNr);
+        setEndleisteCustomRal(c.endleisteCustomRal);
+        setWelleAutomatik(c.welleAutomatik);
+        setWelleManuell(c.welleManuell);
+        setBedienung(c.bedienung);
+        setMotorHersteller(c.motorHersteller);
+        setAustrittSeite(c.austrittSeite);
+        setAustrittPos(c.austrittPos);
+        setInsektenschutz(c.insektenschutz);
+        setNotentriegelung(c.notentriegelung);
+        setMenge((_a = item.menge) !== null && _a !== void 0 ? _a : 1);
+        setKunde(item.kunde === "—" ? "" : item.kunde);
+        setBearbeitungsId(item.id);
+        setTab("konfiguration");
+    };
+    useEffect(() => {
+        if (editRequest && list.length > 0) {
+            const treffer = list.find((i) => i.id === editRequest.id);
+            if (treffer) {
+                ladeZumBearbeiten(treffer);
+                onEditConsumed === null || onEditConsumed === void 0 ? void 0 : onEditConsumed();
+            }
+        }
+    }, [editRequest, list]);
     const setPreis = (key, val) => setProduktPreise((p) => { const next = Object.assign(Object.assign({}, p), { [key]: val }); saveProduktPreise(next); return next; });
     const getPreis = (key) => { var _a; return (_a = produktPreise[key]) !== null && _a !== void 0 ? _a : 0; };
     // Behangtyp (RS37 Standard/RS41/RS52) -> automatische Endleisten-Vorauswahl (Blendengröße),
@@ -1125,7 +1228,7 @@ function RollladenKonfigurator({ onZurueck }) {
     const kastenColor = resolveColor(heroalNr, customRal);
     const displayHex = kastenColor.hex;
     const displayLabel = kastenColor.label;
-    const behangColor = behangWieKasten ? kastenColor : resolveColor(behangNr, behangCustomRal);
+    const behangColor = resolveColor(behangNr, behangCustomRal);
     const schieneColor = schieneWieKasten ? kastenColor : resolveColor(schieneNr, schieneCustomRal);
     const endleisteColor = endleisteWieKasten ? kastenColor : resolveColor(endleisteNr, endleisteCustomRal);
     const schieneTypObj = SCHIENEN_TYPEN.find((t) => t.id === schieneTyp) || SCHIENEN_TYPEN[0];
@@ -1274,8 +1377,11 @@ function RollladenKonfigurator({ onZurueck }) {
             setTimeout(() => setTextKopiert(false), 1500);
         }).catch(() => { });
     };
+    const eingabeUnvollstaendig = ausfuehrung === "einteilig" ? (breite === null || hoehe === null) : (a1 === null || a2 === null || hoehe === null);
     const addToList = () => {
         var _a, _b, _c;
+        if (eingabeUnvollstaendig)
+            return;
         const schieneLabel = (_a = SCHIENEN_TYPEN.find((t) => t.id === schieneTyp)) === null || _a === void 0 ? void 0 : _a.label;
         const endleisteLabel = (_b = ENDLEISTEN_TYPEN.find((t) => t.id === endleisteTyp)) === null || _b === void 0 ? void 0 : _b.label;
         const materialliste = [
@@ -1285,8 +1391,14 @@ function RollladenKonfigurator({ onZurueck }) {
             { bezeichnung: `Welle Ø${welleDurchmesser}mm`, artNr: "—", menge: `${(eb / 1000).toFixed(2)} m` },
             { bezeichnung: `Blendkappe BLK ${blk} (KH ${kh})`, artNr: "—", menge: blkZuschnitt ? `${blkZuschnitt} mm` : "n. verfügbar" },
         ];
+        const config = {
+            ausfuehrung, breite, a1, a2, hoehe, system, kh, khAutomatik, blk, heroalNr, customRal,
+            behangWieKasten, behangNr, behangCustomRal, schieneTyp, schieneWieKasten, schieneNr, schieneCustomRal,
+            behangTyp, endleisteTyp, endleisteManuell, endleisteWieKasten, endleisteNr, endleisteCustomRal,
+            welleAutomatik, welleManuell, bedienung, motorHersteller, austrittSeite, austrittPos, insektenschutz, notentriegelung,
+        };
         const item = {
-            id: Date.now(), kunde: kunde || "—", breite: eb, hoehe, system, ausfuehrung,
+            id: bearbeitungsId !== null && bearbeitungsId !== void 0 ? bearbeitungsId : Date.now(), kunde: kunde || "—", breite: eb, hoehe, system, ausfuehrung,
             heroalNr, colorLabel: behangColor.label, kastenColorLabel: displayLabel,
             bedienung: bed.art === "motor" ? `${bed.label} (${(_c = MOTOR_HERSTELLER.find(m => m.id === motorHersteller)) === null || _c === void 0 ? void 0 : _c.label} ${empfohleneMotorKlasse}Nm)` : bed.label,
             austrittCode, austrittLabel, menge,
@@ -1294,14 +1406,15 @@ function RollladenKonfigurator({ onZurueck }) {
             behanghoehe: Math.round(behanghoehe), kh, blk,
             schieneLabel, schieneColorLabel: schieneColor.label, schieneArtNr: schieneTypObj.artNr,
             endleisteLabel, endleisteColorLabel: endleisteColor.label, endleisteArtNr: endleisteTypObj.artNr,
-            welleDurchmesser, materialliste, positionstext,
+            welleDurchmesser, materialliste, positionstext, config,
             preisEinzelEk: interneKosten, preisEinzelVkNetto: verkaufNetto,
             preisNetto: verkaufNetto, preisBrutto: verkaufBrutto,
         };
-        const next = [...list, item];
+        const next = bearbeitungsId ? list.map((i) => (i.id === bearbeitungsId ? item : i)) : [...list, item];
         setList(next);
         saveList(next);
         setTab("liste");
+        zuruecksetzen();
     };
     const removeFromList = (id) => { const next = list.filter((i) => i.id !== id); setList(next); saveList(next); };
     const gesamtBrutto = list.reduce((s, i) => s + i.preisBrutto * i.menge, 0);
@@ -1395,17 +1508,17 @@ function RollladenKonfigurator({ onZurueck }) {
                             flaecheM2.toFixed(2),
                             " m\u00B2"))),
                 React.createElement("div", { className: "min-w-0" },
-                    React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, [["konfiguration", "Konfiguration"], ["produktion", "Produktion"], ["kalkulation", "Kalkulation"], ["liste", `Liste (${list.length})`]].map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
+                    React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, baueTabs(einstellungen, list.length).map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
                     tab === "konfiguration" && (React.createElement("div", { className: "flex flex-col gap-4" },
                         React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" },
                             React.createElement(Select, { label: "Ausf\u00FChrung", value: ausfuehrung, onChange: setAusfuehrung, options: [{ value: "einteilig", label: "Einteiliges Element" }, { value: "zweiteilig", label: "Zweiteilig (Bockanlage)" }], className: "col-span-2" }),
                             React.createElement(Select, { label: "System", value: system, onChange: setSystem, options: [{ value: "FME", label: "heroal FME" }, { value: "FMR", label: "heroal FMR" }] }),
                             React.createElement(Select, { label: "Blendkappe", value: blk, onChange: setBlk, options: BLK_OPTIONS.map((b) => ({ value: b.id, label: b.label })) }),
                             React.createElement(Select, { label: "Behangtyp", value: behangTyp, onChange: setBehangTyp, options: BEHANG_TYPEN.map((b) => ({ value: b.id, label: b.label })), className: "col-span-2" }),
-                            ausfuehrung === "einteilig" ? (React.createElement(Num, { label: "Elementbreite (EB)", value: breite, onChange: setBreite, unit: "mm", min: 300, className: "col-span-2" })) : (React.createElement(React.Fragment, null,
-                                React.createElement(Num, { label: "Achsma\u00DF 1 (A1)", value: a1, onChange: setA1, unit: "mm", min: 200 }),
-                                React.createElement(Num, { label: "Achsma\u00DF 2 (A2)", value: a2, onChange: setA2, unit: "mm", min: 200 }))),
-                            React.createElement(Num, { label: "Elementh\u00F6he (EH)", value: hoehe, onChange: setHoehe, unit: "mm", min: 300 }),
+                            ausfuehrung === "einteilig" ? (React.createElement(Num, { label: "Elementbreite (EB)", value: breite, onChange: setBreite, unit: "mm", min: 300, className: "col-span-2", allowEmpty: true })) : (React.createElement(React.Fragment, null,
+                                React.createElement(Num, { label: "Achsma\u00DF 1 (A1)", value: a1, onChange: setA1, unit: "mm", min: 200, allowEmpty: true }),
+                                React.createElement(Num, { label: "Achsma\u00DF 2 (A2)", value: a2, onChange: setA2, unit: "mm", min: 200, allowEmpty: true }))),
+                            React.createElement(Num, { label: "Elementh\u00F6he (EH)", value: hoehe, onChange: setHoehe, unit: "mm", min: 300, allowEmpty: true }),
                             React.createElement("div", { className: "flex flex-col gap-1 col-span-2" },
                                 React.createElement("div", { className: "flex items-center justify-between" },
                                     React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Kastenh\u00F6he (KH) / Blendengr\u00F6\u00DFe"),
@@ -1494,19 +1607,13 @@ function RollladenKonfigurator({ onZurueck }) {
                                     React.createElement("span", { className: "block text-[11px] text-[#8A8F98]" }, "heroal Farb\u00FCbersicht \u2014 zum \u00C4ndern tippen")),
                                 React.createElement(Palette, { size: 16, className: "text-[#8A8F98]" }))),
                         React.createElement("div", null,
-                            React.createElement("div", { className: "flex items-center justify-between mb-1.5" },
-                                React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Behang-Farbe (Rollladenstab)"),
-                                React.createElement("label", { className: "flex items-center gap-1.5 text-[11px] text-[#5B6472]" },
-                                    React.createElement("input", { type: "checkbox", checked: behangWieKasten, onChange: (e) => setBehangWieKasten(e.target.checked), className: "accent-[#E8963B] w-3.5 h-3.5" }),
-                                    "Farbe wie Kasten \u00FCbernehmen")),
-                            behangWieKasten ? (React.createElement("div", { className: "flex items-center gap-2 border border-[#D8D4C8] rounded-md bg-[#F0EEE4] px-3 py-2" },
-                                React.createElement("span", { className: "w-6 h-6 rounded-md border border-[#D8D4C8] shrink-0", style: { background: behangColor.hex } }),
-                                React.createElement("span", { className: "text-[13px] text-[#5B6472]" }, behangColor.label))) : (React.createElement("button", { onClick: () => setColorTarget("behang"), className: "w-full flex items-center gap-3 border border-[#D8D4C8] rounded-md bg-white px-3 py-2.5 hover:border-[#E8963B] transition-colors" },
+                            React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium mb-1.5 block" }, "Behang-Farbe (Rollladenstab)"),
+                            React.createElement("button", { onClick: () => setColorTarget("behang"), className: "w-full flex items-center gap-3 border border-[#D8D4C8] rounded-md bg-white px-3 py-2.5 hover:border-[#E8963B] transition-colors" },
                                 React.createElement("span", { className: "w-8 h-8 rounded-md border border-[#D8D4C8] shrink-0", style: { background: behangColor.hex } }),
                                 React.createElement("span", { className: "flex-1 text-left" },
                                     React.createElement("span", { className: "block text-[14px] text-[#1B1F24]" }, behangColor.label),
                                     React.createElement("span", { className: "block text-[11px] text-[#8A8F98]" }, "heroal Farb\u00FCbersicht \u2014 zum \u00C4ndern tippen")),
-                                React.createElement(Palette, { size: 16, className: "text-[#8A8F98]" })))),
+                                React.createElement(Palette, { size: 16, className: "text-[#8A8F98]" }))),
                         React.createElement(Section, { title: "Schiene & Endleiste", defaultOpen: true },
                             React.createElement("div", { className: "flex flex-col gap-4" },
                                 React.createElement("div", { className: "flex gap-3" },
@@ -1914,16 +2021,22 @@ function RollladenKonfigurator({ onZurueck }) {
                         React.createElement(Section, { title: "Positionstext (f\u00FCr Angebot / Auftrag)", defaultOpen: false },
                             React.createElement("p", { className: "text-[11px] text-[#8A8F98] mb-2" }, "Automatisch aus der aktuellen Konfiguration erzeugt \u2014 zum Einf\u00FCgen ins Angebot kopieren."),
                             React.createElement("textarea", { readOnly: true, value: positionstext, className: "w-full h-[220px] border border-[#D8D4C8] rounded-md px-3 py-2 text-[12.5px] font-['IBM_Plex_Mono'] text-[#1B1F24] bg-[#F5F4EF] outline-none resize-none" }),
-                            React.createElement("button", { onClick: kopierePositionstext, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, textKopiert ? "Kopiert ✓" : "Text kopieren")),
+                            React.createElement("button", { onClick: kopierePositionstext, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, textKopiert ? "Kopiert ✓" : "Text kopieren")))),
+                    tab === "abschluss" && (React.createElement("div", { className: "flex flex-col gap-4" },
                         React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white px-4 py-3.5" },
                             React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3" },
-                                React.createElement("label", { className: "flex flex-col gap-1" },
-                                    React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Kunde"),
-                                    React.createElement("input", { value: kunde, onChange: (e) => setKunde(e.target.value), placeholder: "Name", className: "border border-[#D8D4C8] rounded-md px-2.5 py-1.5 text-[14px] outline-none focus:border-[#E8963B]" })),
+                                React.createElement(KundenAuswahl, { value: kunde, onChange: setKunde }),
                                 React.createElement(Num, { label: "Menge", value: menge, onChange: setMenge, unit: "Stk" })),
-                            React.createElement("button", { onClick: addToList, className: "w-full flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md bg-[#E8963B] text-white text-[13px] font-semibold hover:bg-[#d6852e] transition-colors" },
-                                React.createElement(Plus, { size: 15 }),
-                                " Zur Positionsliste hinzuf\u00FCgen")))),
+                            eingabeUnvollstaendig && (React.createElement("p", { className: "text-[11.5px] text-[#C0392B] mb-2" },
+                                "Bitte ",
+                                ausfuehrung === "einteilig" ? "Elementbreite" : "Achsmaß 1 und 2",
+                                " und Elementh\u00F6he in \u201EKonfiguration\" eintragen.")),
+                            React.createElement("div", { className: "flex gap-2" },
+                                React.createElement("button", { onClick: addToList, disabled: eingabeUnvollstaendig, className: `flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md text-white text-[13px] font-semibold transition-colors ${eingabeUnvollstaendig ? "bg-[#D8D4C8] cursor-not-allowed" : "bg-[#E8963B] hover:bg-[#d6852e]"}` },
+                                    React.createElement(Plus, { size: 15 }),
+                                    " ",
+                                    bearbeitungsId ? "Änderungen speichern" : "Zur Positionsliste hinzufügen"),
+                                bearbeitungsId && (React.createElement("button", { onClick: zuruecksetzen, className: "px-3.5 py-2 rounded-md border border-[#D8D4C8] text-[#5B6472] text-[13px] font-medium" }, "Abbrechen")))))),
                     tab === "liste" && (React.createElement("div", { className: "flex flex-col gap-3" }, list.length === 0 ? (React.createElement("div", { className: "text-center py-10 text-[13px] text-[#8A8F98] border border-dashed border-[#D8D4C8] rounded-lg" }, "Noch keine Positionen. Unter \u201EKalkulation\" hinzuf\u00FCgen.")) : (React.createElement(React.Fragment, null,
                         React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white overflow-hidden overflow-x-auto" },
                             React.createElement("table", { className: "w-full text-[12.5px]" },
@@ -1966,6 +2079,8 @@ function RollladenKonfigurator({ onZurueck }) {
                                             (i.preisBrutto * i.menge).toFixed(2),
                                             " \u20AC"),
                                         React.createElement("td", { className: "px-2 py-2 text-right whitespace-nowrap" },
+                                            React.createElement("button", { onClick: () => ladeZumBearbeiten(i), className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Bearbeiten" },
+                                                React.createElement(Pencil, { size: 14 })),
                                             i.positionstext && (React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(i.positionstext); }, className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Positionstext kopieren" },
                                                 React.createElement(Copy, { size: 14 }))),
                                             React.createElement("button", { onClick: () => removeFromList(i.id), className: "text-[#8A8F98] hover:text-[#C0392B]" },
@@ -2001,6 +2116,28 @@ function RollladenKonfigurator({ onZurueck }) {
 // Hinweis: Client-seitiger Schutz hält zufällige Besucher zuverlässig ab, ist aber kein
 // Ersatz für echte Serverauthentifizierung (der Hash ist im Quelltext einsehbar).
 const APP_PASSWORD_HASH = "0191bf7e64339c606e77062d793b1bc988ccbf66f45f9056abf51c1c58de5129"; // Passwort: Rollladen2026
+// Eigenes, separates Passwort für die Einstellungen (Produktion/Kalkulation ein-/ausblenden) — Passwort: Chef2026
+const EINSTELLUNGEN_PASSWORD_HASH = "2553a67fdb26dc219ba3ba5b788b580e78bacb5fe930a3ea318bb0efe20b2e9b";
+// Globale Sichtbarkeits-Einstellungen (gelten für alle 6 Konfiguratoren) — damit Mitarbeiter die App
+// nutzen können, ohne Produktions- bzw. Kalkulationsdaten zu sehen.
+const DEFAULT_EINSTELLUNGEN = { produktionSichtbar: true, kalkulationSichtbar: true };
+function loadEinstellungen(setEinstellungen) {
+    var _a;
+    (_a = window.storage) === null || _a === void 0 ? void 0 : _a.get("app_einstellungen_v1").then((r) => {
+        if (r === null || r === void 0 ? void 0 : r.value) {
+            try {
+                setEinstellungen(Object.assign(Object.assign({}, DEFAULT_EINSTELLUNGEN), JSON.parse(r.value)));
+            }
+            catch (_a) {
+                setEinstellungen(DEFAULT_EINSTELLUNGEN);
+            }
+        }
+        else {
+            setEinstellungen(DEFAULT_EINSTELLUNGEN);
+        }
+    }).catch(() => setEinstellungen(DEFAULT_EINSTELLUNGEN));
+}
+function saveEinstellungen(e) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("app_einstellungen_v1", JSON.stringify(e)).catch(() => { }); }
 async function sha256Hex(text) {
     const enc = new TextEncoder().encode(text);
     const buf = await crypto.subtle.digest("SHA-256", enc);
@@ -2045,6 +2182,94 @@ function druckeUebersicht(titel, kunde, zeilen, hinweis) {
     fenster.document.close();
     fenster.onload = () => { fenster.focus(); fenster.print(); };
     setTimeout(() => { fenster.focus(); fenster.print(); }, 400); // Fallback falls onload nicht feuert
+}
+// ============================================================
+// GEMEINSAME KUNDENVERWALTUNG (produktübergreifend, alle 6 Konfiguratoren teilen sich diese Liste)
+// ============================================================
+function loadKunden(setKunden) {
+    var _a;
+    (_a = window.storage) === null || _a === void 0 ? void 0 : _a.get("kunden_v1").then((r) => {
+        if (r === null || r === void 0 ? void 0 : r.value) {
+            try {
+                setKunden(JSON.parse(r.value));
+            }
+            catch (_a) {
+                setKunden([]);
+            }
+        }
+        else {
+            setKunden([]);
+        }
+    }).catch(() => setKunden([]));
+}
+function saveKunden(liste) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("kunden_v1", JSON.stringify(liste)).catch(() => { }); }
+// Aktiver Kunde — produktübergreifend, damit man erst den Kunden wählt und dann mehrere Produkte
+// nacheinander hinzufügen kann, ohne ihn jedes Mal neu auszuwählen.
+function loadAktiverKunde(setAktiverKunde) {
+    var _a;
+    (_a = window.storage) === null || _a === void 0 ? void 0 : _a.get("aktiver_kunde_v1").then((r) => { if (r === null || r === void 0 ? void 0 : r.value)
+        setAktiverKunde(r.value); }).catch(() => { });
+}
+function saveAktiverKunde(name) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("aktiver_kunde_v1", name || "").catch(() => { }); }
+// Baut die Tab-Leiste für alle 6 Konfiguratoren: Produktion/Kalkulation je nach globalen Einstellungen
+// ein-/ausblendbar, "Kunde zuweisen" (Abschluss) und "Liste" sind immer sichtbar.
+function baueTabs(einstellungen, listenAnzahl) {
+    const tabs = [["konfiguration", "Konfiguration"]];
+    if ((einstellungen === null || einstellungen === void 0 ? void 0 : einstellungen.produktionSichtbar) !== false)
+        tabs.push(["produktion", "Produktion"]);
+    if ((einstellungen === null || einstellungen === void 0 ? void 0 : einstellungen.kalkulationSichtbar) !== false)
+        tabs.push(["kalkulation", "Kalkulation"]);
+    tabs.push(["abschluss", "Kunde zuweisen"]);
+    tabs.push(["liste", `Liste (${listenAnzahl})`]);
+    return tabs;
+}
+// Alle Produkt-Positionslisten, die pro Kunde zusammengeführt werden (für die Kundenübersicht).
+const PRODUKT_LISTEN_KEYS = [
+    { key: "positionsliste_v2", label: "Rollladen", produktRoute: "rollladen" },
+    { key: "spannrahmen_liste_v1", label: "Spannrahmen", produktRoute: "spannrahmen" },
+    { key: "drehtuer_liste_v1", label: "Drehtür", produktRoute: "drehtuer" },
+    { key: "schiebetuer_liste_v1", label: "Schiebetür", produktRoute: "schiebetuer" },
+    { key: "lichtschacht_liste_v1", label: "Lichtschachtabdeckung", produktRoute: "lichtschacht" },
+    { key: "kis_liste_v1", label: "IS KIS", produktRoute: "kis" },
+];
+// Dropdown zur Kundenauswahl mit Inline-"Neuer Kunde"-Option. Wird von allen 6 Konfiguratoren geteilt.
+function KundenAuswahl({ value, onChange }) {
+    const [kunden, setKunden] = useState([]);
+    const [neuModus, setNeuModus] = useState(false);
+    const [neuName, setNeuName] = useState("");
+    useEffect(() => { loadKunden(setKunden); }, []);
+    const kundeAnlegen = () => {
+        const name = neuName.trim();
+        if (!name)
+            return;
+        if (!kunden.includes(name)) {
+            const next = [...kunden, name].sort((a, b) => a.localeCompare(b, "de"));
+            setKunden(next);
+            saveKunden(next);
+        }
+        onChange(name);
+        setNeuModus(false);
+        setNeuName("");
+    };
+    if (neuModus) {
+        return (React.createElement("div", { className: "flex flex-col gap-1" },
+            React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Neuer Kunde"),
+            React.createElement("div", { className: "flex gap-1.5" },
+                React.createElement("input", { autoFocus: true, value: neuName, onChange: (e) => setNeuName(e.target.value), onKeyDown: (e) => e.key === "Enter" && kundeAnlegen(), placeholder: "Name", className: "flex-1 border border-[#D8D4C8] rounded-md px-2.5 py-1.5 text-[14px] outline-none focus:border-[#E8963B]" }),
+                React.createElement("button", { onClick: kundeAnlegen, className: "px-3 py-1.5 rounded-md bg-[#E8963B] text-white text-[13px] font-semibold" }, "OK"),
+                React.createElement("button", { onClick: () => { setNeuModus(false); setNeuName(""); }, className: "px-2.5 py-1.5 rounded-md border border-[#D8D4C8] text-[#5B6472] text-[13px]" }, "\u2715"))));
+    }
+    return (React.createElement("label", { className: "flex flex-col gap-1" },
+        React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Kunde"),
+        React.createElement("select", { value: value, onChange: (e) => { if (e.target.value === "__neu__") {
+                setNeuModus(true);
+            }
+            else {
+                onChange(e.target.value);
+            } }, className: "border border-[#D8D4C8] rounded-md px-2.5 py-1.5 text-[14px] outline-none focus:border-[#E8963B] bg-white" },
+            React.createElement("option", { value: "" }, "\u2014 kein Kunde \u2014"),
+            kunden.map((k) => (React.createElement("option", { key: k, value: k }, k))),
+            React.createElement("option", { value: "__neu__" }, "+ Neuer Kunde\u2026"))));
 }
 function PasswordGate({ onUnlock }) {
     const [pw, setPw] = useState("");
@@ -2160,25 +2385,59 @@ function loadSpannrahmenListe(setListe) {
     }).catch(() => { });
 }
 function saveSpannrahmenListe(l) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("spannrahmen_liste_v1", JSON.stringify(l)).catch(() => { }); }
-function SpannrahmenKonfigurator({ onZurueck }) {
+function SpannrahmenKonfigurator({ onZurueck, editRequest, onEditConsumed, defaultKunde, einstellungen }) {
     const [tab, setTab] = useState("konfiguration");
     const [preise, setPreise] = useState({});
     const [liste, setListe] = useState([]);
     const [colorModalOpen, setColorModalOpen] = useState(false);
     const [kostenSichtbar, setKostenSichtbar] = useState(false);
-    const [lichteBreite, setLichteBreite] = useState(1000);
-    const [lichteHoehe, setLichteHoehe] = useState(1200);
+    const [bearbeitungsId, setBearbeitungsId] = useState(null);
+    const [lichteBreite, setLichteBreite] = useState(null);
+    const [lichteHoehe, setLichteHoehe] = useState(null);
     const [profilTyp, setProfilTyp] = useState("es10");
     const [gewebeTyp, setGewebeTyp] = useState("classic");
     const [befestigungTyp, setBefestigungTyp] = useState("klemmwinkel1");
     const [falzmass, setFalzmass] = useState(13);
     const [heroalNr, setHeroalNr] = useState("44");
     const [customRal, setCustomRal] = useState("7016");
-    const [kunde, setKunde] = useState("");
+    const [kunde, setKunde] = useState(defaultKunde || "");
     const [menge, setMenge] = useState(1);
     useEffect(() => { loadSpannrahmenPreise(setPreise); loadSpannrahmenListe(setListe); }, []);
     const getPreis = (key) => { var _a; return (_a = preise[key]) !== null && _a !== void 0 ? _a : 0; };
     const setPreis = (key, val) => setPreise((p) => { const next = Object.assign(Object.assign({}, p), { [key]: val }); saveSpannrahmenPreise(next); return next; });
+    const zuruecksetzen = () => {
+        setLichteBreite(null);
+        setLichteHoehe(null);
+        setProfilTyp("es10");
+        setGewebeTyp("classic");
+        setFalzmass(13);
+        setMenge(1);
+        setBearbeitungsId(null);
+    };
+    const ladeZumBearbeiten = (item) => {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        const c = item.config || {};
+        setLichteBreite((_a = c.lichteBreite) !== null && _a !== void 0 ? _a : item.lichteBreite);
+        setLichteHoehe((_b = c.lichteHoehe) !== null && _b !== void 0 ? _b : item.lichteHoehe);
+        setProfilTyp((_c = c.profilTyp) !== null && _c !== void 0 ? _c : "es10");
+        setGewebeTyp((_d = c.gewebeTyp) !== null && _d !== void 0 ? _d : "classic");
+        setFalzmass((_e = c.falzmass) !== null && _e !== void 0 ? _e : 13);
+        setHeroalNr((_f = c.heroalNr) !== null && _f !== void 0 ? _f : "44");
+        setCustomRal((_g = c.customRal) !== null && _g !== void 0 ? _g : "7016");
+        setMenge((_h = item.menge) !== null && _h !== void 0 ? _h : 1);
+        setKunde(item.kunde === "—" ? "" : item.kunde);
+        setBearbeitungsId(item.id);
+        setTab("konfiguration");
+    };
+    useEffect(() => {
+        if (editRequest && liste.length > 0) {
+            const treffer = liste.find((i) => i.id === editRequest.id);
+            if (treffer) {
+                ladeZumBearbeiten(treffer);
+                onEditConsumed === null || onEditConsumed === void 0 ? void 0 : onEditConsumed();
+            }
+        }
+    }, [editRequest, liste]);
     const profilObj = SPANNRAHMEN_PROFILE.find((p) => p.id === profilTyp) || SPANNRAHMEN_PROFILE[0];
     const hakenmass = falzmass + 2; // Hakenmaß = Falzmaß + 2mm
     const einhaengewinkelObj = findEinhaengewinkel(hakenmass);
@@ -2189,8 +2448,8 @@ function SpannrahmenKonfigurator({ onZurueck }) {
     const displayHex = heroalNr === "39" ? ((ralInfo === null || ralInfo === void 0 ? void 0 : ralInfo.hex) || "#E8963B") : heroalColor.hex;
     const displayLabel = heroalNr === "39" ? `RAL ${customRal} · ${(ralInfo === null || ralInfo === void 0 ? void 0 : ralInfo.name) || ""}` : `Nr. ${heroalColor.nr} · ${heroalColor.name}`;
     // --- Produktion ---
-    const rahmenbreite = lichteBreite + profilObj.zuschlagBreite;
-    const rahmenhoehe = lichteHoehe + profilObj.zuschlagHoehe;
+    const rahmenbreite = (lichteBreite || 0) + profilObj.zuschlagBreite;
+    const rahmenhoehe = (lichteHoehe || 0) + profilObj.zuschlagHoehe;
     const umfangM = (2 * rahmenbreite + 2 * rahmenhoehe) / 1000;
     const gewebeflaecheM2 = (rahmenbreite / 1000) * (rahmenhoehe / 1000);
     // --- Kalkulation ---
@@ -2215,7 +2474,7 @@ function SpannrahmenKonfigurator({ onZurueck }) {
     const verkaufBrutto = verkaufNetto * (1 + mwst / 100);
     const margeEuro = verkaufNetto - interneKosten;
     const positionstext = [
-        `Lichte Breite: ${lichteBreite} mm, Lichte Höhe: ${lichteHoehe} mm`,
+        `Lichte Breite: ${lichteBreite !== null && lichteBreite !== void 0 ? lichteBreite : "?"} mm, Lichte Höhe: ${lichteHoehe !== null && lichteHoehe !== void 0 ? lichteHoehe : "?"} mm`,
         `Rahmenmaß: ${rahmenbreite} × ${rahmenhoehe} mm`,
         `Montageart: ${befestigungObj.label}`,
         `Profil: ${profilObj.label}`,
@@ -2223,17 +2482,22 @@ function SpannrahmenKonfigurator({ onZurueck }) {
         `Farbe: ${displayLabel}`,
         `Gewebe: ${gewebeObj.label} (${gewebeObj.farbe})`,
     ].join("\n");
+    const eingabeUnvollstaendig = lichteBreite === null || lichteHoehe === null;
     const addToListe = () => {
+        if (eingabeUnvollstaendig)
+            return;
+        const config = { lichteBreite, lichteHoehe, profilTyp, gewebeTyp, falzmass, heroalNr, customRal };
         const item = {
-            id: Date.now(), kunde: kunde || "—", lichteBreite, lichteHoehe, rahmenbreite, rahmenhoehe,
+            id: bearbeitungsId !== null && bearbeitungsId !== void 0 ? bearbeitungsId : Date.now(), kunde: kunde || "—", lichteBreite, lichteHoehe, rahmenbreite, rahmenhoehe,
             profilLabel: profilObj.label, gewebeLabel: gewebeObj.label, colorLabel: displayLabel,
-            befestigungLabel: befestigungObj.label, menge, positionstext,
+            befestigungLabel: befestigungObj.label, menge, positionstext, config,
             preisEinzelEk: interneKosten, preisNetto: verkaufNetto, preisBrutto: verkaufBrutto,
         };
-        const next = [...liste, item];
+        const next = bearbeitungsId ? liste.map((i) => (i.id === bearbeitungsId ? item : i)) : [...liste, item];
         setListe(next);
         saveSpannrahmenListe(next);
         setTab("liste");
+        zuruecksetzen();
     };
     const removeFromListe = (id) => { const next = liste.filter((i) => i.id !== id); setListe(next); saveSpannrahmenListe(next); };
     const gesamtBrutto = liste.reduce((s, i) => s + i.preisBrutto * i.menge, 0);
@@ -2249,12 +2513,12 @@ function SpannrahmenKonfigurator({ onZurueck }) {
                     React.createElement("div", { className: "text-[11px] tracking-[0.2em] uppercase text-[#E8963B] font-oswald font-semibold mb-1" }, "TH Sonnenschutz \u2014 Produktion"),
                     React.createElement("h1", { className: "text-[26px] md:text-[32px] font-oswald font-semibold text-[#1B1F24] leading-tight" }, "Spannrahmen-Konfigurator"),
                     React.createElement("p", { className: "text-[13px] text-[#5B6472] mt-1" }, "Insektenschutz-Spannrahmen nach heroal IS Fertigungskatalog (88328 00 01)."))),
-            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, [["konfiguration", "Konfiguration"], ["produktion", "Produktion"], ["kalkulation", "Kalkulation"], ["liste", `Liste (${liste.length})`]].map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
+            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, baueTabs(einstellungen, liste.length).map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
             tab === "konfiguration" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" },
                     React.createElement(Select, { label: "Ausf\u00FChrung", value: profilTyp, onChange: setProfilTyp, options: SPANNRAHMEN_PROFILE.map((p) => ({ value: p.id, label: p.label })), className: "col-span-2" }),
-                    React.createElement(Num, { label: profilObj.basis === "mass" ? "Maß B (direkt im Rahmen gemessen)" : "Lichte Breite", value: lichteBreite, onChange: setLichteBreite, unit: "mm", min: 200 }),
-                    React.createElement(Num, { label: profilObj.basis === "mass" ? "Maß H (direkt im Rahmen gemessen)" : "Lichte Höhe", value: lichteHoehe, onChange: setLichteHoehe, unit: "mm", min: 200 }),
+                    React.createElement(Num, { label: profilObj.basis === "mass" ? "Maß B (direkt im Rahmen gemessen)" : "Lichte Breite", value: lichteBreite, onChange: setLichteBreite, unit: "mm", min: 200, allowEmpty: true }),
+                    React.createElement(Num, { label: profilObj.basis === "mass" ? "Maß H (direkt im Rahmen gemessen)" : "Lichte Höhe", value: lichteHoehe, onChange: setLichteHoehe, unit: "mm", min: 200, allowEmpty: true }),
                     React.createElement(Num, { label: "Falzma\u00DF", value: falzmass, onChange: setFalzmass, unit: "mm", min: 5, className: "col-span-2" }),
                     React.createElement(Select, { label: "Gewebe", value: gewebeTyp, onChange: setGewebeTyp, options: GEWEBE_TYPEN.map((g) => ({ value: g.id, label: `${g.label} (${g.farbe})` })), className: "col-span-2" })),
                 React.createElement("p", { className: "text-[11px] text-[#8A8F98] -mt-2" }, gewebeObj.info),
@@ -2466,16 +2730,19 @@ function SpannrahmenKonfigurator({ onZurueck }) {
                         React.createElement(Num, { label: "MwSt", value: getPreis("mwst") || 20, onChange: (v) => setPreis("mwst", v), unit: "%", min: 0 }))),
                 React.createElement(Section, { title: "Positionstext (f\u00FCr Angebot / Auftrag)", defaultOpen: false },
                     React.createElement("textarea", { readOnly: true, value: positionstext, className: "w-full h-[140px] border border-[#D8D4C8] rounded-md px-3 py-2 text-[12.5px] font-['IBM_Plex_Mono'] text-[#1B1F24] bg-[#F5F4EF] outline-none resize-none" }),
-                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")),
+                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")))),
+            tab === "abschluss" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white px-4 py-3.5" },
                     React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3" },
-                        React.createElement("label", { className: "flex flex-col gap-1" },
-                            React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Kunde"),
-                            React.createElement("input", { value: kunde, onChange: (e) => setKunde(e.target.value), placeholder: "Name", className: "border border-[#D8D4C8] rounded-md px-2.5 py-1.5 text-[14px] outline-none focus:border-[#E8963B]" })),
+                        React.createElement(KundenAuswahl, { value: kunde, onChange: setKunde }),
                         React.createElement(Num, { label: "Menge", value: menge, onChange: setMenge, unit: "Stk" })),
-                    React.createElement("button", { onClick: addToListe, className: "w-full flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md bg-[#E8963B] text-white text-[13px] font-semibold hover:bg-[#d6852e] transition-colors" },
-                        React.createElement(Plus, { size: 15 }),
-                        " Zur Positionsliste hinzuf\u00FCgen")))),
+                    eingabeUnvollstaendig && (React.createElement("p", { className: "text-[11.5px] text-[#C0392B] mb-2" }, "Bitte Breite und H\u00F6he in \u201EKonfiguration\" eintragen.")),
+                    React.createElement("div", { className: "flex gap-2" },
+                        React.createElement("button", { onClick: addToListe, disabled: eingabeUnvollstaendig, className: `flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md text-white text-[13px] font-semibold transition-colors ${eingabeUnvollstaendig ? "bg-[#D8D4C8] cursor-not-allowed" : "bg-[#E8963B] hover:bg-[#d6852e]"}` },
+                            React.createElement(Plus, { size: 15 }),
+                            " ",
+                            bearbeitungsId ? "Änderungen speichern" : "Zur Positionsliste hinzufügen"),
+                        bearbeitungsId && (React.createElement("button", { onClick: zuruecksetzen, className: "px-3.5 py-2 rounded-md border border-[#D8D4C8] text-[#5B6472] text-[13px] font-medium" }, "Abbrechen")))))),
             tab === "liste" && (React.createElement("div", { className: "flex flex-col gap-3" }, liste.length === 0 ? (React.createElement("div", { className: "text-center py-10 text-[13px] text-[#8A8F98] border border-dashed border-[#D8D4C8] rounded-lg" }, "Noch keine Positionen. Unter \u201EKalkulation\" hinzuf\u00FCgen.")) : (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white overflow-hidden overflow-x-auto" },
                     React.createElement("table", { className: "w-full text-[12.5px]" },
@@ -2508,6 +2775,8 @@ function SpannrahmenKonfigurator({ onZurueck }) {
                                     (i.preisBrutto * i.menge).toFixed(2),
                                     " \u20AC"),
                                 React.createElement("td", { className: "px-2 py-2 text-right whitespace-nowrap" },
+                                    React.createElement("button", { onClick: () => ladeZumBearbeiten(i), className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Bearbeiten" },
+                                        React.createElement(Pencil, { size: 14 })),
                                     React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(i.positionstext); }, className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Positionstext kopieren" },
                                         React.createElement(Copy, { size: 14 })),
                                     React.createElement("button", { onClick: () => removeFromListe(i.id), className: "text-[#8A8F98] hover:text-[#C0392B]" },
@@ -2604,24 +2873,58 @@ function loadDrehtuerListe(setListe) {
     }).catch(() => { });
 }
 function saveDrehtuerListe(l) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("drehtuer_liste_v1", JSON.stringify(l)).catch(() => { }); }
-function DrehtuerKonfigurator({ onZurueck }) {
+function DrehtuerKonfigurator({ onZurueck, editRequest, onEditConsumed, defaultKunde, einstellungen }) {
     const [tab, setTab] = useState("konfiguration");
     const [preise, setPreise] = useState({});
     const [liste, setListe] = useState([]);
     const [colorModalOpen, setColorModalOpen] = useState(false);
     const [kostenSichtbar, setKostenSichtbar] = useState(false);
-    const [lichteBreite, setLichteBreite] = useState(900);
-    const [lichteHoehe, setLichteHoehe] = useState(2000);
+    const [bearbeitungsId, setBearbeitungsId] = useState(null);
+    const [lichteBreite, setLichteBreite] = useState(null);
+    const [lichteHoehe, setLichteHoehe] = useState(null);
     const [ausfuehrungTyp, setAusfuehrungTyp] = useState("dt3");
     const [gewebeTyp, setGewebeTyp] = useState("classic");
     const [anschlag, setAnschlag] = useState("links"); // Türanschlag, rein informativ für den Positionstext
     const [heroalNr, setHeroalNr] = useState("44");
     const [customRal, setCustomRal] = useState("7016");
-    const [kunde, setKunde] = useState("");
+    const [kunde, setKunde] = useState(defaultKunde || "");
     const [menge, setMenge] = useState(1);
     useEffect(() => { loadDrehtuerPreise(setPreise); loadDrehtuerListe(setListe); }, []);
     const getPreis = (key) => { var _a; return (_a = preise[key]) !== null && _a !== void 0 ? _a : 0; };
     const setPreis = (key, val) => setPreise((p) => { const next = Object.assign(Object.assign({}, p), { [key]: val }); saveDrehtuerPreise(next); return next; });
+    const zuruecksetzen = () => {
+        setLichteBreite(null);
+        setLichteHoehe(null);
+        setAusfuehrungTyp("dt3");
+        setGewebeTyp("classic");
+        setAnschlag("links");
+        setMenge(1);
+        setBearbeitungsId(null);
+    };
+    const ladeZumBearbeiten = (item) => {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        const c = item.config || {};
+        setLichteBreite((_a = c.lichteBreite) !== null && _a !== void 0 ? _a : item.lichteBreite);
+        setLichteHoehe((_b = c.lichteHoehe) !== null && _b !== void 0 ? _b : item.lichteHoehe);
+        setAusfuehrungTyp((_c = c.ausfuehrungTyp) !== null && _c !== void 0 ? _c : "dt3");
+        setGewebeTyp((_d = c.gewebeTyp) !== null && _d !== void 0 ? _d : "classic");
+        setAnschlag((_e = item.anschlag) !== null && _e !== void 0 ? _e : "links");
+        setHeroalNr((_f = c.heroalNr) !== null && _f !== void 0 ? _f : "44");
+        setCustomRal((_g = c.customRal) !== null && _g !== void 0 ? _g : "7016");
+        setMenge((_h = item.menge) !== null && _h !== void 0 ? _h : 1);
+        setKunde(item.kunde === "—" ? "" : item.kunde);
+        setBearbeitungsId(item.id);
+        setTab("konfiguration");
+    };
+    useEffect(() => {
+        if (editRequest && liste.length > 0) {
+            const treffer = liste.find((i) => i.id === editRequest.id);
+            if (treffer) {
+                ladeZumBearbeiten(treffer);
+                onEditConsumed === null || onEditConsumed === void 0 ? void 0 : onEditConsumed();
+            }
+        }
+    }, [editRequest, liste]);
     const ausfuehrungObj = DREHTUER_AUSFUEHRUNG.find((a) => a.id === ausfuehrungTyp) || DREHTUER_AUSFUEHRUNG[0];
     const gewebeObj = GEWEBE_TYPEN.find((g) => g.id === gewebeTyp) || GEWEBE_TYPEN[0];
     const heroalColor = HEROAL_FARBEN.find((c) => c.nr === heroalNr) || HEROAL_FARBEN[0];
@@ -2630,8 +2933,8 @@ function DrehtuerKonfigurator({ onZurueck }) {
     const displayLabel = heroalNr === "39" ? `RAL ${customRal} · ${(ralInfo === null || ralInfo === void 0 ? void 0 : ralInfo.name) || ""}` : `Nr. ${heroalColor.nr} · ${heroalColor.name}`;
     // --- Produktion ---
     // Rahmenmaß (Zarge) aus Lichtem Maß bzw. direkt gemessenem Maß H/B, je nach Ausführung.
-    const rahmenbreite = lichteBreite + ausfuehrungObj.zuschlagBreite;
-    const rahmenhoehe = lichteHoehe + ausfuehrungObj.zuschlagHoehe;
+    const rahmenbreite = (lichteBreite || 0) + ausfuehrungObj.zuschlagBreite;
+    const rahmenhoehe = (lichteHoehe || 0) + ausfuehrungObj.zuschlagHoehe;
     // Flügelmaß (beweglicher Türflügel) wird vom Rahmenmaß abgeleitet.
     const fluegelbreite = rahmenbreite + ausfuehrungObj.fluegelZuschlagBreite;
     const fluegelhoehe = rahmenhoehe + ausfuehrungObj.fluegelZuschlagHoehe;
@@ -2666,7 +2969,7 @@ function DrehtuerKonfigurator({ onZurueck }) {
     const verkaufBrutto = verkaufNetto * (1 + mwst / 100);
     const margeEuro = verkaufNetto - interneKosten;
     const positionstext = [
-        `${ausfuehrungObj.hoeheBasis === "mass" ? "Maß H" : "Lichte Höhe"}: ${lichteHoehe} mm, ${ausfuehrungObj.breiteBasis === "mass" ? "Maß B" : "Lichte Breite"}: ${lichteBreite} mm`,
+        `${ausfuehrungObj.hoeheBasis === "mass" ? "Maß H" : "Lichte Höhe"}: ${lichteHoehe !== null && lichteHoehe !== void 0 ? lichteHoehe : "?"} mm, ${ausfuehrungObj.breiteBasis === "mass" ? "Maß B" : "Lichte Breite"}: ${lichteBreite !== null && lichteBreite !== void 0 ? lichteBreite : "?"} mm`,
         `Rahmenmaß (Zarge): ${rahmenbreite} × ${rahmenhoehe} mm`,
         `Flügelmaß: ${fluegelbreite} × ${fluegelhoehe} mm`,
         `Ausführung: ${ausfuehrungObj.label} (heroal Katalog S. ${ausfuehrungObj.seite})`,
@@ -2677,17 +2980,22 @@ function DrehtuerKonfigurator({ onZurueck }) {
         `Farbe: ${displayLabel}`,
         `Gewebe: ${gewebeObj.label} (${gewebeObj.farbe})`,
     ].join("\n");
+    const eingabeUnvollstaendig = lichteBreite === null || lichteHoehe === null;
     const addToListe = () => {
+        if (eingabeUnvollstaendig)
+            return;
+        const config = { lichteBreite, lichteHoehe, ausfuehrungTyp, gewebeTyp, heroalNr, customRal };
         const item = {
-            id: Date.now(), kunde: kunde || "—", lichteBreite, lichteHoehe, rahmenbreite, rahmenhoehe, fluegelbreite, fluegelhoehe,
+            id: bearbeitungsId !== null && bearbeitungsId !== void 0 ? bearbeitungsId : Date.now(), kunde: kunde || "—", lichteBreite, lichteHoehe, rahmenbreite, rahmenhoehe, fluegelbreite, fluegelhoehe,
             ausfuehrungLabel: ausfuehrungObj.label, gewebeLabel: gewebeObj.label, colorLabel: displayLabel,
-            anschlag, menge, positionstext,
+            anschlag, menge, positionstext, config,
             preisEinzelEk: interneKosten, preisNetto: verkaufNetto, preisBrutto: verkaufBrutto,
         };
-        const next = [...liste, item];
+        const next = bearbeitungsId ? liste.map((i) => (i.id === bearbeitungsId ? item : i)) : [...liste, item];
         setListe(next);
         saveDrehtuerListe(next);
         setTab("liste");
+        zuruecksetzen();
     };
     const removeFromListe = (id) => { const next = liste.filter((i) => i.id !== id); setListe(next); saveDrehtuerListe(next); };
     const gesamtBrutto = liste.reduce((s, i) => s + i.preisBrutto * i.menge, 0);
@@ -2703,12 +3011,12 @@ function DrehtuerKonfigurator({ onZurueck }) {
                     React.createElement("div", { className: "text-[11px] tracking-[0.2em] uppercase text-[#E8963B] font-oswald font-semibold mb-1" }, "TH Sonnenschutz \u2014 Produktion"),
                     React.createElement("h1", { className: "text-[26px] md:text-[32px] font-oswald font-semibold text-[#1B1F24] leading-tight" }, "Dreht\u00FCr-Konfigurator"),
                     React.createElement("p", { className: "text-[13px] text-[#5B6472] mt-1" }, "Insektenschutz-Dreht\u00FCr nach heroal IS Fertigungskatalog (88328 00 01)."))),
-            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, [["konfiguration", "Konfiguration"], ["produktion", "Produktion"], ["kalkulation", "Kalkulation"], ["liste", `Liste (${liste.length})`]].map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
+            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, baueTabs(einstellungen, liste.length).map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
             tab === "konfiguration" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" },
                     React.createElement(Select, { label: "Ausf\u00FChrung", value: ausfuehrungTyp, onChange: setAusfuehrungTyp, options: DREHTUER_AUSFUEHRUNG.map((a) => ({ value: a.id, label: a.label })), className: "col-span-2" }),
-                    React.createElement(Num, { label: ausfuehrungObj.breiteBasis === "mass" ? "Maß B (direkt gemessen)" : "Lichte Breite", value: lichteBreite, onChange: setLichteBreite, unit: "mm", min: 400 }),
-                    React.createElement(Num, { label: ausfuehrungObj.hoeheBasis === "mass" ? "Maß H (direkt gemessen)" : "Lichte Höhe", value: lichteHoehe, onChange: setLichteHoehe, unit: "mm", min: 800 }),
+                    React.createElement(Num, { label: ausfuehrungObj.breiteBasis === "mass" ? "Maß B (direkt gemessen)" : "Lichte Breite", value: lichteBreite, onChange: setLichteBreite, unit: "mm", min: 400, allowEmpty: true }),
+                    React.createElement(Num, { label: ausfuehrungObj.hoeheBasis === "mass" ? "Maß H (direkt gemessen)" : "Lichte Höhe", value: lichteHoehe, onChange: setLichteHoehe, unit: "mm", min: 800, allowEmpty: true }),
                     React.createElement(Select, { label: "T\u00FCranschlag", value: anschlag, onChange: setAnschlag, options: [{ value: "links", label: "Links" }, { value: "rechts", label: "Rechts" }], className: "col-span-2" }),
                     React.createElement(Select, { label: "Gewebe", value: gewebeTyp, onChange: setGewebeTyp, options: GEWEBE_TYPEN.map((g) => ({ value: g.id, label: `${g.label} (${g.farbe})` })), className: "col-span-2" })),
                 React.createElement("p", { className: "text-[11px] text-[#8A8F98] -mt-2" }, gewebeObj.info),
@@ -2977,16 +3285,19 @@ function DrehtuerKonfigurator({ onZurueck }) {
                         React.createElement(Num, { label: "Magnetband (12960)", value: getPreis("magnetband"), onChange: (v) => setPreis("magnetband", v), unit: "\u20AC/lfm", min: 0 }))),
                 React.createElement(Section, { title: "Positionstext (f\u00FCr Angebot / Auftrag)", defaultOpen: false },
                     React.createElement("textarea", { readOnly: true, value: positionstext, className: "w-full h-[160px] border border-[#D8D4C8] rounded-md px-3 py-2 text-[12.5px] font-['IBM_Plex_Mono'] text-[#1B1F24] bg-[#F5F4EF] outline-none resize-none" }),
-                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")),
+                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")))),
+            tab === "abschluss" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white px-4 py-3.5" },
                     React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3" },
-                        React.createElement("label", { className: "flex flex-col gap-1" },
-                            React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Kunde"),
-                            React.createElement("input", { value: kunde, onChange: (e) => setKunde(e.target.value), placeholder: "Name", className: "border border-[#D8D4C8] rounded-md px-2.5 py-1.5 text-[14px] outline-none focus:border-[#E8963B]" })),
+                        React.createElement(KundenAuswahl, { value: kunde, onChange: setKunde }),
                         React.createElement(Num, { label: "Menge", value: menge, onChange: setMenge, unit: "Stk" })),
-                    React.createElement("button", { onClick: addToListe, className: "w-full flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md bg-[#E8963B] text-white text-[13px] font-semibold hover:bg-[#d6852e] transition-colors" },
-                        React.createElement(Plus, { size: 15 }),
-                        " Zur Positionsliste hinzuf\u00FCgen")))),
+                    eingabeUnvollstaendig && (React.createElement("p", { className: "text-[11.5px] text-[#C0392B] mb-2" }, "Bitte Breite und H\u00F6he in \u201EKonfiguration\" eintragen.")),
+                    React.createElement("div", { className: "flex gap-2" },
+                        React.createElement("button", { onClick: addToListe, disabled: eingabeUnvollstaendig, className: `flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md text-white text-[13px] font-semibold transition-colors ${eingabeUnvollstaendig ? "bg-[#D8D4C8] cursor-not-allowed" : "bg-[#E8963B] hover:bg-[#d6852e]"}` },
+                            React.createElement(Plus, { size: 15 }),
+                            " ",
+                            bearbeitungsId ? "Änderungen speichern" : "Zur Positionsliste hinzufügen"),
+                        bearbeitungsId && (React.createElement("button", { onClick: zuruecksetzen, className: "px-3.5 py-2 rounded-md border border-[#D8D4C8] text-[#5B6472] text-[13px] font-medium" }, "Abbrechen")))))),
             tab === "liste" && (React.createElement("div", { className: "flex flex-col gap-3" }, liste.length === 0 ? (React.createElement("div", { className: "text-center py-10 text-[13px] text-[#8A8F98] border border-dashed border-[#D8D4C8] rounded-lg" }, "Noch keine Positionen. Unter \u201EKalkulation\" hinzuf\u00FCgen.")) : (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white overflow-hidden overflow-x-auto" },
                     React.createElement("table", { className: "w-full text-[12.5px]" },
@@ -3022,6 +3333,8 @@ function DrehtuerKonfigurator({ onZurueck }) {
                                     (i.preisBrutto * i.menge).toFixed(2),
                                     " \u20AC"),
                                 React.createElement("td", { className: "px-2 py-2 text-right whitespace-nowrap" },
+                                    React.createElement("button", { onClick: () => ladeZumBearbeiten(i), className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Bearbeiten" },
+                                        React.createElement(Pencil, { size: 14 })),
                                     React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(i.positionstext); }, className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Positionstext kopieren" },
                                         React.createElement(Copy, { size: 14 })),
                                     React.createElement("button", { onClick: () => removeFromListe(i.id), className: "text-[#8A8F98] hover:text-[#C0392B]" },
@@ -3113,24 +3426,58 @@ function loadSchiebetuerListe(setListe) {
     }).catch(() => { });
 }
 function saveSchiebetuerListe(l) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("schiebetuer_liste_v1", JSON.stringify(l)).catch(() => { }); }
-function SchiebetuerKonfigurator({ onZurueck }) {
+function SchiebetuerKonfigurator({ onZurueck, editRequest, onEditConsumed, defaultKunde, einstellungen }) {
     const [tab, setTab] = useState("konfiguration");
     const [preise, setPreise] = useState({});
     const [liste, setListe] = useState([]);
     const [colorModalOpen, setColorModalOpen] = useState(false);
     const [kostenSichtbar, setKostenSichtbar] = useState(false);
-    const [rahmenbreite, setRahmenbreite] = useState(1500);
-    const [rahmenhoehe, setRahmenhoehe] = useState(2100);
+    const [bearbeitungsId, setBearbeitungsId] = useState(null);
+    const [rahmenbreite, setRahmenbreite] = useState(null);
+    const [rahmenhoehe, setRahmenhoehe] = useState(null);
     const [gewebeTyp, setGewebeTyp] = useState("classic");
     const [ausfuehrungTyp, setAusfuehrungTyp] = useState("sa1");
     const [laufrichtung, setLaufrichtung] = useState("links");
     const [heroalNr, setHeroalNr] = useState("44");
     const [customRal, setCustomRal] = useState("7016");
-    const [kunde, setKunde] = useState("");
+    const [kunde, setKunde] = useState(defaultKunde || "");
     const [menge, setMenge] = useState(1);
     useEffect(() => { loadSchiebetuerPreise(setPreise); loadSchiebetuerListe(setListe); }, []);
     const getPreis = (key) => { var _a; return (_a = preise[key]) !== null && _a !== void 0 ? _a : 0; };
     const setPreis = (key, val) => setPreise((p) => { const next = Object.assign(Object.assign({}, p), { [key]: val }); saveSchiebetuerPreise(next); return next; });
+    const zuruecksetzen = () => {
+        setRahmenbreite(null);
+        setRahmenhoehe(null);
+        setGewebeTyp("classic");
+        setAusfuehrungTyp("sa1");
+        setLaufrichtung("links");
+        setMenge(1);
+        setBearbeitungsId(null);
+    };
+    const ladeZumBearbeiten = (item) => {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        const c = item.config || {};
+        setRahmenbreite((_a = c.rahmenbreite) !== null && _a !== void 0 ? _a : item.rahmenbreite);
+        setRahmenhoehe((_b = c.rahmenhoehe) !== null && _b !== void 0 ? _b : item.rahmenhoehe);
+        setGewebeTyp((_c = c.gewebeTyp) !== null && _c !== void 0 ? _c : "classic");
+        setAusfuehrungTyp((_d = c.ausfuehrungTyp) !== null && _d !== void 0 ? _d : "sa1");
+        setLaufrichtung((_e = item.laufrichtung) !== null && _e !== void 0 ? _e : "links");
+        setHeroalNr((_f = c.heroalNr) !== null && _f !== void 0 ? _f : "44");
+        setCustomRal((_g = c.customRal) !== null && _g !== void 0 ? _g : "7016");
+        setMenge((_h = item.menge) !== null && _h !== void 0 ? _h : 1);
+        setKunde(item.kunde === "—" ? "" : item.kunde);
+        setBearbeitungsId(item.id);
+        setTab("konfiguration");
+    };
+    useEffect(() => {
+        if (editRequest && liste.length > 0) {
+            const treffer = liste.find((i) => i.id === editRequest.id);
+            if (treffer) {
+                ladeZumBearbeiten(treffer);
+                onEditConsumed === null || onEditConsumed === void 0 ? void 0 : onEditConsumed();
+            }
+        }
+    }, [editRequest, liste]);
     const gewebeObj = GEWEBE_TYPEN.find((g) => g.id === gewebeTyp) || GEWEBE_TYPEN[0];
     const ausfuehrungObj = SCHIEBETUER_AUSFUEHRUNG.find((a) => a.id === ausfuehrungTyp) || SCHIEBETUER_AUSFUEHRUNG[0];
     const heroalColor = HEROAL_FARBEN.find((c) => c.nr === heroalNr) || HEROAL_FARBEN[0];
@@ -3140,9 +3487,9 @@ function SchiebetuerKonfigurator({ onZurueck }) {
     // --- Produktion ---
     // Bei der Schiebetür wird das Rahmenmaß direkt angegeben (nicht aus Lichtem Maß abgeleitet) — der/die
     // Flügel (bewegliche Elemente) werden davon abgeleitet: Flügelbreite = (Rahmenbreite - Abzug) / Anzahl.
-    const fluegelhoehe = rahmenhoehe + ausfuehrungObj.zuschlagFluegelhoehe;
-    const fluegelbreite = (rahmenbreite - ausfuehrungObj.breiteAbzugGesamt) / ausfuehrungObj.fluegelAnzahl;
-    const zargeUmfangM = (2 * rahmenbreite + 2 * rahmenhoehe) / 1000;
+    const fluegelhoehe = (rahmenhoehe || 0) + ausfuehrungObj.zuschlagFluegelhoehe;
+    const fluegelbreite = ((rahmenbreite || 0) - ausfuehrungObj.breiteAbzugGesamt) / ausfuehrungObj.fluegelAnzahl;
+    const zargeUmfangM = (2 * (rahmenbreite || 0) + 2 * (rahmenhoehe || 0)) / 1000;
     const gewebeflaecheM2 = (fluegelbreite / 1000) * (fluegelhoehe / 1000) * ausfuehrungObj.fluegelAnzahl;
     // --- Kalkulation ---
     const zargePreisProStange = getPreis(`zarge_${ausfuehrungTyp}`);
@@ -3168,7 +3515,7 @@ function SchiebetuerKonfigurator({ onZurueck }) {
     const verkaufBrutto = verkaufNetto * (1 + mwst / 100);
     const margeEuro = verkaufNetto - interneKosten;
     const positionstext = [
-        `Rahmenbreite: ${rahmenbreite} mm, Rahmenhöhe: ${rahmenhoehe} mm`,
+        `Rahmenbreite: ${rahmenbreite !== null && rahmenbreite !== void 0 ? rahmenbreite : "?"} mm, Rahmenhöhe: ${rahmenhoehe !== null && rahmenhoehe !== void 0 ? rahmenhoehe : "?"} mm`,
         `Flügelmaß: ${fluegelbreite.toFixed(1)} × ${fluegelhoehe} mm (${ausfuehrungObj.fluegelAnzahl}× Flügel)`,
         `Ausführung: ${ausfuehrungObj.label} (heroal Katalog S. ${ausfuehrungObj.seite})`,
         `Laufrichtung: ${laufrichtung === "links" ? "Links" : "Rechts"}`,
@@ -3177,17 +3524,22 @@ function SchiebetuerKonfigurator({ onZurueck }) {
         `Farbe: ${displayLabel}`,
         `Gewebe: ${gewebeObj.label} (${gewebeObj.farbe})`,
     ].join("\n");
+    const eingabeUnvollstaendig = rahmenbreite === null || rahmenhoehe === null;
     const addToListe = () => {
+        if (eingabeUnvollstaendig)
+            return;
+        const config = { rahmenbreite, rahmenhoehe, gewebeTyp, ausfuehrungTyp, heroalNr, customRal };
         const item = {
-            id: Date.now(), kunde: kunde || "—", rahmenbreite, rahmenhoehe, fluegelbreite, fluegelhoehe,
+            id: bearbeitungsId !== null && bearbeitungsId !== void 0 ? bearbeitungsId : Date.now(), kunde: kunde || "—", rahmenbreite, rahmenhoehe, fluegelbreite, fluegelhoehe,
             gewebeLabel: gewebeObj.label, colorLabel: displayLabel,
-            ausfuehrungLabel: ausfuehrungObj.label, laufrichtung, menge, positionstext,
+            ausfuehrungLabel: ausfuehrungObj.label, laufrichtung, menge, positionstext, config,
             preisEinzelEk: interneKosten, preisNetto: verkaufNetto, preisBrutto: verkaufBrutto,
         };
-        const next = [...liste, item];
+        const next = bearbeitungsId ? liste.map((i) => (i.id === bearbeitungsId ? item : i)) : [...liste, item];
         setListe(next);
         saveSchiebetuerListe(next);
         setTab("liste");
+        zuruecksetzen();
     };
     const removeFromListe = (id) => { const next = liste.filter((i) => i.id !== id); setListe(next); saveSchiebetuerListe(next); };
     const gesamtBrutto = liste.reduce((s, i) => s + i.preisBrutto * i.menge, 0);
@@ -3203,7 +3555,7 @@ function SchiebetuerKonfigurator({ onZurueck }) {
                     React.createElement("div", { className: "text-[11px] tracking-[0.2em] uppercase text-[#E8963B] font-oswald font-semibold mb-1" }, "TH Sonnenschutz \u2014 Produktion"),
                     React.createElement("h1", { className: "text-[26px] md:text-[32px] font-oswald font-semibold text-[#1B1F24] leading-tight" }, "Schiebet\u00FCr-Konfigurator"),
                     React.createElement("p", { className: "text-[13px] text-[#5B6472] mt-1" }, "Insektenschutz-Schiebet\u00FCr nach heroal IS Fertigungskatalog (88328 00 01)."))),
-            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, [["konfiguration", "Konfiguration"], ["produktion", "Produktion"], ["kalkulation", "Kalkulation"], ["liste", `Liste (${liste.length})`]].map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
+            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, baueTabs(einstellungen, liste.length).map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
             tab === "konfiguration" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "border border-[#D8D4C8] rounded-md bg-[#FFF8EF] px-3 py-2 text-[11.5px] text-[#8A6438]" },
                     "Bei der Schiebet\u00FCr gibst du das ",
@@ -3211,8 +3563,8 @@ function SchiebetuerKonfigurator({ onZurueck }) {
                     " direkt an (nicht das lichte \u00D6ffnungsma\u00DF) \u2014 der bewegliche Fl\u00FCgel wird daraus berechnet."),
                 React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" },
                     React.createElement(Select, { label: "Ausf\u00FChrung", value: ausfuehrungTyp, onChange: setAusfuehrungTyp, options: SCHIEBETUER_AUSFUEHRUNG.map((a) => ({ value: a.id, label: a.label })), className: "col-span-2" }),
-                    React.createElement(Num, { label: "Rahmenbreite", value: rahmenbreite, onChange: setRahmenbreite, unit: "mm", min: 600 }),
-                    React.createElement(Num, { label: "Rahmenh\u00F6he", value: rahmenhoehe, onChange: setRahmenhoehe, unit: "mm", min: 800 }),
+                    React.createElement(Num, { label: "Rahmenbreite", value: rahmenbreite, onChange: setRahmenbreite, unit: "mm", min: 600, allowEmpty: true }),
+                    React.createElement(Num, { label: "Rahmenh\u00F6he", value: rahmenhoehe, onChange: setRahmenhoehe, unit: "mm", min: 800, allowEmpty: true }),
                     React.createElement(Select, { label: "Laufrichtung", value: laufrichtung, onChange: setLaufrichtung, options: [{ value: "links", label: "Links" }, { value: "rechts", label: "Rechts" }] }),
                     React.createElement(Select, { label: "Gewebe", value: gewebeTyp, onChange: setGewebeTyp, options: GEWEBE_TYPEN.map((g) => ({ value: g.id, label: `${g.label} (${g.farbe})` })), className: "col-span-2" })),
                 React.createElement("p", { className: "text-[11px] text-[#8A8F98] -mt-2" }, gewebeObj.info),
@@ -3437,16 +3789,19 @@ function SchiebetuerKonfigurator({ onZurueck }) {
                         React.createElement(Num, { label: "MwSt", value: getPreis("mwst") || 20, onChange: (v) => setPreis("mwst", v), unit: "%", min: 0 }))),
                 React.createElement(Section, { title: "Positionstext (f\u00FCr Angebot / Auftrag)", defaultOpen: false },
                     React.createElement("textarea", { readOnly: true, value: positionstext, className: "w-full h-[160px] border border-[#D8D4C8] rounded-md px-3 py-2 text-[12.5px] font-['IBM_Plex_Mono'] text-[#1B1F24] bg-[#F5F4EF] outline-none resize-none" }),
-                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")),
+                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")))),
+            tab === "abschluss" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white px-4 py-3.5" },
                     React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3" },
-                        React.createElement("label", { className: "flex flex-col gap-1" },
-                            React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Kunde"),
-                            React.createElement("input", { value: kunde, onChange: (e) => setKunde(e.target.value), placeholder: "Name", className: "border border-[#D8D4C8] rounded-md px-2.5 py-1.5 text-[14px] outline-none focus:border-[#E8963B]" })),
+                        React.createElement(KundenAuswahl, { value: kunde, onChange: setKunde }),
                         React.createElement(Num, { label: "Menge", value: menge, onChange: setMenge, unit: "Stk" })),
-                    React.createElement("button", { onClick: addToListe, className: "w-full flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md bg-[#E8963B] text-white text-[13px] font-semibold hover:bg-[#d6852e] transition-colors" },
-                        React.createElement(Plus, { size: 15 }),
-                        " Zur Positionsliste hinzuf\u00FCgen")))),
+                    eingabeUnvollstaendig && (React.createElement("p", { className: "text-[11.5px] text-[#C0392B] mb-2" }, "Bitte Rahmenbreite und Rahmenh\u00F6he in \u201EKonfiguration\" eintragen.")),
+                    React.createElement("div", { className: "flex gap-2" },
+                        React.createElement("button", { onClick: addToListe, disabled: eingabeUnvollstaendig, className: `flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md text-white text-[13px] font-semibold transition-colors ${eingabeUnvollstaendig ? "bg-[#D8D4C8] cursor-not-allowed" : "bg-[#E8963B] hover:bg-[#d6852e]"}` },
+                            React.createElement(Plus, { size: 15 }),
+                            " ",
+                            bearbeitungsId ? "Änderungen speichern" : "Zur Positionsliste hinzufügen"),
+                        bearbeitungsId && (React.createElement("button", { onClick: zuruecksetzen, className: "px-3.5 py-2 rounded-md border border-[#D8D4C8] text-[#5B6472] text-[13px] font-medium" }, "Abbrechen")))))),
             tab === "liste" && (React.createElement("div", { className: "flex flex-col gap-3" }, liste.length === 0 ? (React.createElement("div", { className: "text-center py-10 text-[13px] text-[#8A8F98] border border-dashed border-[#D8D4C8] rounded-lg" }, "Noch keine Positionen. Unter \u201EKalkulation\" hinzuf\u00FCgen.")) : (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white overflow-hidden overflow-x-auto" },
                     React.createElement("table", { className: "w-full text-[12.5px]" },
@@ -3482,6 +3837,8 @@ function SchiebetuerKonfigurator({ onZurueck }) {
                                     (i.preisBrutto * i.menge).toFixed(2),
                                     " \u20AC"),
                                 React.createElement("td", { className: "px-2 py-2 text-right whitespace-nowrap" },
+                                    React.createElement("button", { onClick: () => ladeZumBearbeiten(i), className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Bearbeiten" },
+                                        React.createElement(Pencil, { size: 14 })),
                                     React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(i.positionstext); }, className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Positionstext kopieren" },
                                         React.createElement(Copy, { size: 14 })),
                                     React.createElement("button", { onClick: () => removeFromListe(i.id), className: "text-[#8A8F98] hover:text-[#C0392B]" },
@@ -3551,27 +3908,57 @@ function loadLichtschachtListe(setListe) {
     }).catch(() => { });
 }
 function saveLichtschachtListe(l) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("lichtschacht_liste_v1", JSON.stringify(l)).catch(() => { }); }
-function LichtschachtKonfigurator({ onZurueck }) {
+function LichtschachtKonfigurator({ onZurueck, editRequest, onEditConsumed, defaultKunde, einstellungen }) {
     const [tab, setTab] = useState("konfiguration");
     const [preise, setPreise] = useState({});
     const [liste, setListe] = useState([]);
     const [kostenSichtbar, setKostenSichtbar] = useState(false);
-    const [rahmenbreite, setRahmenbreite] = useState(1000);
-    const [rahmenhoehe, setRahmenhoehe] = useState(600);
+    const [bearbeitungsId, setBearbeitungsId] = useState(null);
+    const [rahmenbreite, setRahmenbreite] = useState(null);
+    const [rahmenhoehe, setRahmenhoehe] = useState(null);
     const [ausfuehrungTyp, setAusfuehrungTyp] = useState("offen");
     const [materialTyp, setMaterialTyp] = useState("alu-streckmetall");
-    const [kunde, setKunde] = useState("");
+    const [kunde, setKunde] = useState(defaultKunde || "");
     const [menge, setMenge] = useState(1);
     useEffect(() => { loadLichtschachtPreise(setPreise); loadLichtschachtListe(setListe); }, []);
     const getPreis = (key) => { var _a; return (_a = preise[key]) !== null && _a !== void 0 ? _a : 0; };
     const setPreis = (key, val) => setPreise((p) => { const next = Object.assign(Object.assign({}, p), { [key]: val }); saveLichtschachtPreise(next); return next; });
+    const zuruecksetzen = () => {
+        setRahmenbreite(null);
+        setRahmenhoehe(null);
+        setAusfuehrungTyp("offen");
+        setMaterialTyp("alu-streckmetall");
+        setMenge(1);
+        setBearbeitungsId(null);
+    };
+    const ladeZumBearbeiten = (item) => {
+        var _a, _b, _c, _d, _e;
+        const c = item.config || {};
+        setRahmenbreite((_a = c.rahmenbreite) !== null && _a !== void 0 ? _a : item.rahmenbreite);
+        setRahmenhoehe((_b = c.rahmenhoehe) !== null && _b !== void 0 ? _b : item.rahmenhoehe);
+        setAusfuehrungTyp((_c = c.ausfuehrungTyp) !== null && _c !== void 0 ? _c : "offen");
+        setMaterialTyp((_d = c.materialTyp) !== null && _d !== void 0 ? _d : "alu-streckmetall");
+        setMenge((_e = item.menge) !== null && _e !== void 0 ? _e : 1);
+        setKunde(item.kunde === "—" ? "" : item.kunde);
+        setBearbeitungsId(item.id);
+        setTab("konfiguration");
+    };
+    useEffect(() => {
+        if (editRequest && liste.length > 0) {
+            const treffer = liste.find((i) => i.id === editRequest.id);
+            if (treffer) {
+                ladeZumBearbeiten(treffer);
+                onEditConsumed === null || onEditConsumed === void 0 ? void 0 : onEditConsumed();
+            }
+        }
+    }, [editRequest, liste]);
     const ausfuehrungObj = LICHTSCHACHT_AUSFUEHRUNG.find((a) => a.id === ausfuehrungTyp) || LICHTSCHACHT_AUSFUEHRUNG[0];
     const materialObj = LICHTSCHACHT_MATERIAL.find((m) => m.id === materialTyp) || LICHTSCHACHT_MATERIAL[0];
     // --- Produktion ---
     // Für die Lichtschachtabdeckung ist im Katalogausschnitt keine textliche Zuschlagsformel hinterlegt
     // (nur zeichnerisch bemaßt) — das Rahmenmaß wird daher direkt als Bestellmaß übernommen.
-    const umfangM = (2 * rahmenbreite + 2 * rahmenhoehe) / 1000;
-    const flaecheM2 = (rahmenbreite / 1000) * (rahmenhoehe / 1000);
+    const umfangM = (2 * (rahmenbreite || 0) + 2 * (rahmenhoehe || 0)) / 1000;
+    const flaecheM2 = ((rahmenbreite || 0) / 1000) * ((rahmenhoehe || 0) / 1000);
     // --- Kalkulation ---
     const profilPreisProStange = getPreis(`profil_${ausfuehrungTyp}`);
     const profilKosten = (umfangM / 6) * profilPreisProStange;
@@ -3579,8 +3966,8 @@ function LichtschachtKonfigurator({ onZurueck }) {
     const materialKosten = flaecheM2 * materialPreisProM2;
     const eckverbinderKosten = getPreis("eckverbinder") * 4;
     // Winkelbürste (1x Breite, oben) + Bürstendichtung (2x Breite + 1x Höhe, umlaufend außer Rückseite) lt. Notizzettel.
-    const winkelbuersteKosten = (rahmenbreite / 1000) * getPreis("winkelbuerste");
-    const buerstendichtungKosten = ((2 * rahmenbreite + rahmenhoehe) / 1000) * getPreis("buerstendichtung");
+    const winkelbuersteKosten = ((rahmenbreite || 0) / 1000) * getPreis("winkelbuerste");
+    const buerstendichtungKosten = ((2 * (rahmenbreite || 0) + (rahmenhoehe || 0)) / 1000) * getPreis("buerstendichtung");
     const fixkostenKleinteile = getPreis("kleinteile");
     const materialkosten = profilKosten + materialKosten + eckverbinderKosten + winkelbuersteKosten + buerstendichtungKosten + fixkostenKleinteile;
     const stundensatz = getPreis("stundensatz") || 55;
@@ -3594,20 +3981,25 @@ function LichtschachtKonfigurator({ onZurueck }) {
     const verkaufBrutto = verkaufNetto * (1 + mwst / 100);
     const margeEuro = verkaufNetto - interneKosten;
     const positionstext = [
-        `Rahmenbreite: ${rahmenbreite} mm, Rahmenhöhe: ${rahmenhoehe} mm`,
+        `Rahmenbreite: ${rahmenbreite !== null && rahmenbreite !== void 0 ? rahmenbreite : "?"} mm, Rahmenhöhe: ${rahmenhoehe !== null && rahmenhoehe !== void 0 ? rahmenhoehe : "?"} mm`,
         `Ausführung: ${ausfuehrungObj.label}`,
         `Abdeckmaterial: ${materialObj.label} (${materialObj.farbe})`,
     ].join("\n");
+    const eingabeUnvollstaendig = rahmenbreite === null || rahmenhoehe === null;
     const addToListe = () => {
+        if (eingabeUnvollstaendig)
+            return;
+        const config = { rahmenbreite, rahmenhoehe, ausfuehrungTyp, materialTyp };
         const item = {
-            id: Date.now(), kunde: kunde || "—", rahmenbreite, rahmenhoehe,
-            ausfuehrungLabel: ausfuehrungObj.label, materialLabel: materialObj.label, menge, positionstext,
+            id: bearbeitungsId !== null && bearbeitungsId !== void 0 ? bearbeitungsId : Date.now(), kunde: kunde || "—", rahmenbreite, rahmenhoehe,
+            ausfuehrungLabel: ausfuehrungObj.label, materialLabel: materialObj.label, menge, positionstext, config,
             preisEinzelEk: interneKosten, preisNetto: verkaufNetto, preisBrutto: verkaufBrutto,
         };
-        const next = [...liste, item];
+        const next = bearbeitungsId ? liste.map((i) => (i.id === bearbeitungsId ? item : i)) : [...liste, item];
         setListe(next);
         saveLichtschachtListe(next);
         setTab("liste");
+        zuruecksetzen();
     };
     const removeFromListe = (id) => { const next = liste.filter((i) => i.id !== id); setListe(next); saveLichtschachtListe(next); };
     const gesamtBrutto = liste.reduce((s, i) => s + i.preisBrutto * i.menge, 0);
@@ -3622,12 +4014,12 @@ function LichtschachtKonfigurator({ onZurueck }) {
                     React.createElement("div", { className: "text-[11px] tracking-[0.2em] uppercase text-[#E8963B] font-oswald font-semibold mb-1" }, "TH Sonnenschutz \u2014 Produktion"),
                     React.createElement("h1", { className: "text-[26px] md:text-[32px] font-oswald font-semibold text-[#1B1F24] leading-tight" }, "Lichtschachtabdeckung-Konfigurator"),
                     React.createElement("p", { className: "text-[13px] text-[#5B6472] mt-1" }, "heroal IS Fertigungskatalog (88328 00 01)."))),
-            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, [["konfiguration", "Konfiguration"], ["produktion", "Produktion"], ["kalkulation", "Kalkulation"], ["liste", `Liste (${liste.length})`]].map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
+            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, baueTabs(einstellungen, liste.length).map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
             tab === "konfiguration" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "border border-[#D8D4C8] rounded-md bg-[#FFF8EF] px-3 py-2 text-[11.5px] text-[#8A6438]" }, "Rahmenma\u00DF = Bestellma\u00DF, direkt am Lichtschacht gemessen (keine Zuschlagsformel im Katalog hinterlegt)."),
                 React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" },
-                    React.createElement(Num, { label: "Rahmenbreite", value: rahmenbreite, onChange: setRahmenbreite, unit: "mm", min: 300 }),
-                    React.createElement(Num, { label: "Rahmenh\u00F6he", value: rahmenhoehe, onChange: setRahmenhoehe, unit: "mm", min: 200 }),
+                    React.createElement(Num, { label: "Rahmenbreite", value: rahmenbreite, onChange: setRahmenbreite, unit: "mm", min: 300, allowEmpty: true }),
+                    React.createElement(Num, { label: "Rahmenh\u00F6he", value: rahmenhoehe, onChange: setRahmenhoehe, unit: "mm", min: 200, allowEmpty: true }),
                     React.createElement(Select, { label: "Ausf\u00FChrung", value: ausfuehrungTyp, onChange: setAusfuehrungTyp, options: LICHTSCHACHT_AUSFUEHRUNG.map((a) => ({ value: a.id, label: a.label })), className: "col-span-2" }),
                     React.createElement(Select, { label: "Abdeckmaterial", value: materialTyp, onChange: setMaterialTyp, options: LICHTSCHACHT_MATERIAL.map((m) => ({ value: m.id, label: `${m.label} (${m.farbe})` })), className: "col-span-2" })),
                 React.createElement("p", { className: "text-[11px] text-[#8A8F98] -mt-2" }, materialObj.info),
@@ -3773,16 +4165,19 @@ function LichtschachtKonfigurator({ onZurueck }) {
                         React.createElement(Num, { label: "MwSt", value: getPreis("mwst") || 20, onChange: (v) => setPreis("mwst", v), unit: "%", min: 0 }))),
                 React.createElement(Section, { title: "Positionstext (f\u00FCr Angebot / Auftrag)", defaultOpen: false },
                     React.createElement("textarea", { readOnly: true, value: positionstext, className: "w-full h-[110px] border border-[#D8D4C8] rounded-md px-3 py-2 text-[12.5px] font-['IBM_Plex_Mono'] text-[#1B1F24] bg-[#F5F4EF] outline-none resize-none" }),
-                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")),
+                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")))),
+            tab === "abschluss" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white px-4 py-3.5" },
                     React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3" },
-                        React.createElement("label", { className: "flex flex-col gap-1" },
-                            React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Kunde"),
-                            React.createElement("input", { value: kunde, onChange: (e) => setKunde(e.target.value), placeholder: "Name", className: "border border-[#D8D4C8] rounded-md px-2.5 py-1.5 text-[14px] outline-none focus:border-[#E8963B]" })),
+                        React.createElement(KundenAuswahl, { value: kunde, onChange: setKunde }),
                         React.createElement(Num, { label: "Menge", value: menge, onChange: setMenge, unit: "Stk" })),
-                    React.createElement("button", { onClick: addToListe, className: "w-full flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md bg-[#E8963B] text-white text-[13px] font-semibold hover:bg-[#d6852e] transition-colors" },
-                        React.createElement(Plus, { size: 15 }),
-                        " Zur Positionsliste hinzuf\u00FCgen")))),
+                    eingabeUnvollstaendig && (React.createElement("p", { className: "text-[11.5px] text-[#C0392B] mb-2" }, "Bitte Rahmenbreite und Rahmenh\u00F6he in \u201EKonfiguration\" eintragen.")),
+                    React.createElement("div", { className: "flex gap-2" },
+                        React.createElement("button", { onClick: addToListe, disabled: eingabeUnvollstaendig, className: `flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md text-white text-[13px] font-semibold transition-colors ${eingabeUnvollstaendig ? "bg-[#D8D4C8] cursor-not-allowed" : "bg-[#E8963B] hover:bg-[#d6852e]"}` },
+                            React.createElement(Plus, { size: 15 }),
+                            " ",
+                            bearbeitungsId ? "Änderungen speichern" : "Zur Positionsliste hinzufügen"),
+                        bearbeitungsId && (React.createElement("button", { onClick: zuruecksetzen, className: "px-3.5 py-2 rounded-md border border-[#D8D4C8] text-[#5B6472] text-[13px] font-medium" }, "Abbrechen")))))),
             tab === "liste" && (React.createElement("div", { className: "flex flex-col gap-3" }, liste.length === 0 ? (React.createElement("div", { className: "text-center py-10 text-[13px] text-[#8A8F98] border border-dashed border-[#D8D4C8] rounded-lg" }, "Noch keine Positionen. Unter \u201EKalkulation\" hinzuf\u00FCgen.")) : (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white overflow-hidden overflow-x-auto" },
                     React.createElement("table", { className: "w-full text-[12.5px]" },
@@ -3815,6 +4210,8 @@ function LichtschachtKonfigurator({ onZurueck }) {
                                     (i.preisBrutto * i.menge).toFixed(2),
                                     " \u20AC"),
                                 React.createElement("td", { className: "px-2 py-2 text-right whitespace-nowrap" },
+                                    React.createElement("button", { onClick: () => ladeZumBearbeiten(i), className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Bearbeiten" },
+                                        React.createElement(Pencil, { size: 14 })),
                                     React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(i.positionstext); }, className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Positionstext kopieren" },
                                         React.createElement(Copy, { size: 14 })),
                                     React.createElement("button", { onClick: () => removeFromListe(i.id), className: "text-[#8A8F98] hover:text-[#C0392B]" },
@@ -3897,36 +4294,70 @@ function loadKisListe(setListe) {
     }).catch(() => { });
 }
 function saveKisListe(l) { var _a; (_a = window.storage) === null || _a === void 0 ? void 0 : _a.set("kis_liste_v1", JSON.stringify(l)).catch(() => { }); }
-function KisKonfigurator({ onZurueck }) {
+function KisKonfigurator({ onZurueck, editRequest, onEditConsumed, defaultKunde, einstellungen }) {
     const [tab, setTab] = useState("konfiguration");
     const [preise, setPreise] = useState({});
     const [liste, setListe] = useState([]);
     const [colorModalOpen, setColorModalOpen] = useState(false);
     const [kostenSichtbar, setKostenSichtbar] = useState(false);
-    const [eb, setEb] = useState(1200);
-    const [eh, setEh] = useState(1500);
+    const [bearbeitungsId, setBearbeitungsId] = useState(null);
+    const [eb, setEb] = useState(null);
+    const [eh, setEh] = useState(null);
     const [mechanikTyp, setMechanikTyp] = useState("bremsmechanik");
     const [fuehrungsabschluss, setFuehrungsabschluss] = useState(false);
     const [beweglicherEinsatz, setBeweglicherEinsatz] = useState(false);
     const [heroalNr, setHeroalNr] = useState("44");
     const [customRal, setCustomRal] = useState("7016");
-    const [kunde, setKunde] = useState("");
+    const [kunde, setKunde] = useState(defaultKunde || "");
     const [menge, setMenge] = useState(1);
     useEffect(() => { loadKisPreise(setPreise); loadKisListe(setListe); }, []);
     const getPreis = (key) => { var _a; return (_a = preise[key]) !== null && _a !== void 0 ? _a : 0; };
     const setPreis = (key, val) => setPreise((p) => { const next = Object.assign(Object.assign({}, p), { [key]: val }); saveKisPreise(next); return next; });
+    const zuruecksetzen = () => {
+        setEb(null);
+        setEh(null);
+        setMechanikTyp("bremsmechanik");
+        setFuehrungsabschluss(false);
+        setBeweglicherEinsatz(false);
+        setMenge(1);
+        setBearbeitungsId(null);
+    };
+    const ladeZumBearbeiten = (item) => {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        const c = item.config || {};
+        setEb((_a = c.eb) !== null && _a !== void 0 ? _a : item.eb);
+        setEh((_b = c.eh) !== null && _b !== void 0 ? _b : item.eh);
+        setMechanikTyp((_c = c.mechanikTyp) !== null && _c !== void 0 ? _c : "bremsmechanik");
+        setFuehrungsabschluss((_d = c.fuehrungsabschluss) !== null && _d !== void 0 ? _d : false);
+        setBeweglicherEinsatz((_e = c.beweglicherEinsatz) !== null && _e !== void 0 ? _e : false);
+        setHeroalNr((_f = c.heroalNr) !== null && _f !== void 0 ? _f : "44");
+        setCustomRal((_g = c.customRal) !== null && _g !== void 0 ? _g : "7016");
+        setMenge((_h = item.menge) !== null && _h !== void 0 ? _h : 1);
+        setKunde(item.kunde === "—" ? "" : item.kunde);
+        setBearbeitungsId(item.id);
+        setTab("konfiguration");
+    };
+    useEffect(() => {
+        if (editRequest && liste.length > 0) {
+            const treffer = liste.find((i) => i.id === editRequest.id);
+            if (treffer) {
+                ladeZumBearbeiten(treffer);
+                onEditConsumed === null || onEditConsumed === void 0 ? void 0 : onEditConsumed();
+            }
+        }
+    }, [editRequest, liste]);
     const mechanikObj = KIS_MECHANIK_TYPEN.find((m) => m.id === mechanikTyp) || KIS_MECHANIK_TYPEN[0];
     const heroalColor = HEROAL_FARBEN.find((c) => c.nr === heroalNr) || HEROAL_FARBEN[0];
     const ralInfo = RAL_CLASSIC.find((r) => r.code === customRal);
     const displayHex = heroalNr === "39" ? ((ralInfo === null || ralInfo === void 0 ? void 0 : ralInfo.hex) || "#E8963B") : heroalColor.hex;
     const displayLabel = heroalNr === "39" ? `RAL ${customRal} · ${(ralInfo === null || ralInfo === void 0 ? void 0 : ralInfo.name) || ""}` : `Nr. ${heroalColor.nr} · ${heroalColor.name}`;
     // --- Produktion (Zuschnitte lt. Katalog-Stückliste) ---
-    const blendeZuschnitt = eb - 10;
-    const fuehrungZuschnitt = eh - 50;
-    const welleZuschnitt = eb - 35;
-    const endleisteZuschnitt = eb - 87;
-    const gewebeflaecheM2 = (eb / 1000) * (eh / 1000);
-    const ebMax = eb > 1600, ehMax = eh > 2400;
+    const blendeZuschnitt = (eb || 0) - 10;
+    const fuehrungZuschnitt = (eh || 0) - 50;
+    const welleZuschnitt = (eb || 0) - 35;
+    const endleisteZuschnitt = (eb || 0) - 87;
+    const gewebeflaecheM2 = ((eb || 0) / 1000) * ((eh || 0) / 1000);
+    const ebMax = (eb || 0) > 1600, ehMax = (eh || 0) > 2400;
     // --- Kalkulation ---
     const blendeKosten = getPreis("blende");
     const blendkappeKosten = getPreis("blendkappe");
@@ -3934,7 +4365,7 @@ function KisKonfigurator({ onZurueck }) {
     const streifenbuersteKosten = getPreis("streifenbuerste");
     const fuehrungsabschlussKosten = fuehrungsabschluss ? getPreis("fuehrungsabschluss") : 0;
     // Welle mit Gaze: automatische Wahl der Größenklasse nach Elementbreite, Preis pro 6m-Achsenlänge auf Zuschnitt umgelegt.
-    const welleGroesse = eb <= 1700 ? "bis1700" : "bis2400";
+    const welleGroesse = (eb || 0) <= 1700 ? "bis1700" : "bis2400";
     const welleKosten = (welleZuschnitt / 1000) * getPreis(`welle_gaze_${welleGroesse}`);
     const endgleiterKosten = getPreis("endgleiter") * 2;
     const mechanikKosten = getPreis(`mechanik_${mechanikTyp}`);
@@ -3955,22 +4386,27 @@ function KisKonfigurator({ onZurueck }) {
     const verkaufBrutto = verkaufNetto * (1 + mwst / 100);
     const margeEuro = verkaufNetto - interneKosten;
     const positionstext = [
-        `Elementbreite (EB): ${eb} mm, Elementhöhe (EH): ${eh} mm`,
+        `Elementbreite (EB): ${eb !== null && eb !== void 0 ? eb : "?"} mm, Elementhöhe (EH): ${eh !== null && eh !== void 0 ? eh : "?"} mm`,
         `Blende: ${blendeZuschnitt} mm, Führung: ${fuehrungZuschnitt} mm (2×), Welle: ${welleZuschnitt} mm, Endleiste: ${endleisteZuschnitt} mm`,
         `Mechanik: ${mechanikObj.label} (Art. ${mechanikObj.artNr})`,
         `Führungsschienenabschluss: ${fuehrungsabschluss ? "ja" : "nein"}`,
         `Beweglicher Endleisteneinsatz für Bürste: ${beweglicherEinsatz ? "ja" : "nein"}`,
         `Farbe: ${displayLabel}`,
     ].join("\n");
+    const eingabeUnvollstaendig = eb === null || eh === null;
     const addToListe = () => {
+        if (eingabeUnvollstaendig)
+            return;
+        const config = { eb, eh, mechanikTyp, fuehrungsabschluss, beweglicherEinsatz, heroalNr, customRal };
         const item = {
-            id: Date.now(), kunde: kunde || "—", eb, eh, mechanikLabel: mechanikObj.label, colorLabel: displayLabel,
-            menge, positionstext, preisEinzelEk: interneKosten, preisNetto: verkaufNetto, preisBrutto: verkaufBrutto,
+            id: bearbeitungsId !== null && bearbeitungsId !== void 0 ? bearbeitungsId : Date.now(), kunde: kunde || "—", eb, eh, mechanikLabel: mechanikObj.label, colorLabel: displayLabel,
+            menge, positionstext, config, preisEinzelEk: interneKosten, preisNetto: verkaufNetto, preisBrutto: verkaufBrutto,
         };
-        const next = [...liste, item];
+        const next = bearbeitungsId ? liste.map((i) => (i.id === bearbeitungsId ? item : i)) : [...liste, item];
         setListe(next);
         saveKisListe(next);
         setTab("liste");
+        zuruecksetzen();
     };
     const removeFromListe = (id) => { const next = liste.filter((i) => i.id !== id); setListe(next); saveKisListe(next); };
     const gesamtBrutto = liste.reduce((s, i) => s + i.preisBrutto * i.menge, 0);
@@ -3986,11 +4422,11 @@ function KisKonfigurator({ onZurueck }) {
                     React.createElement("div", { className: "text-[11px] tracking-[0.2em] uppercase text-[#E8963B] font-oswald font-semibold mb-1" }, "TH Sonnenschutz \u2014 Produktion"),
                     React.createElement("h1", { className: "text-[26px] md:text-[32px] font-oswald font-semibold text-[#1B1F24] leading-tight" }, "IS KIS-Konfigurator"),
                     React.createElement("p", { className: "text-[13px] text-[#5B6472] mt-1" }, "Insektengitter Rollo \u2014 heroal IS Fertigungskatalog (88328 00 01), S. 218-219."))),
-            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, [["konfiguration", "Konfiguration"], ["produktion", "Produktion"], ["kalkulation", "Kalkulation"], ["liste", `Liste (${liste.length})`]].map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
+            React.createElement("div", { className: "flex gap-1 mb-4 border-b border-[#E2DFD3] overflow-x-auto" }, baueTabs(einstellungen, liste.length).map(([id, label]) => (React.createElement("button", { key: id, onClick: () => setTab(id), className: `px-3.5 py-2 text-[13px] font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === id ? "border-[#E8963B] text-[#1B1F24]" : "border-transparent text-[#8A8F98] hover:text-[#5B6472]"}` }, label)))),
             tab === "konfiguration" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" },
-                    React.createElement(Num, { label: "Elementbreite (EB)", value: eb, onChange: setEb, unit: "mm", min: 300 }),
-                    React.createElement(Num, { label: "Elementh\u00F6he (EH)", value: eh, onChange: setEh, unit: "mm", min: 300 }),
+                    React.createElement(Num, { label: "Elementbreite (EB)", value: eb, onChange: setEb, unit: "mm", min: 300, allowEmpty: true }),
+                    React.createElement(Num, { label: "Elementh\u00F6he (EH)", value: eh, onChange: setEh, unit: "mm", min: 300, allowEmpty: true }),
                     React.createElement(Select, { label: "Mechanik", value: mechanikTyp, onChange: setMechanikTyp, options: KIS_MECHANIK_TYPEN.map((m) => ({ value: m.id, label: m.label })), className: "col-span-2" })),
                 (ebMax || ehMax) && (React.createElement("p", { className: "text-[11.5px] text-[#C0392B] bg-[#FDEDEB] border border-[#C0392B] rounded-md px-3 py-2" }, "\u26A0 Maximalma\u00DF lt. Katalog \u00FCberschritten (EB max. 1600mm, EH max. 2400mm).")),
                 React.createElement("label", { className: "flex items-center gap-2 text-[13px] text-[#1B1F24]" },
@@ -4199,16 +4635,19 @@ function KisKonfigurator({ onZurueck }) {
                         React.createElement(Num, { label: "MwSt", value: getPreis("mwst") || 20, onChange: (v) => setPreis("mwst", v), unit: "%", min: 0 }))),
                 React.createElement(Section, { title: "Positionstext (f\u00FCr Angebot / Auftrag)", defaultOpen: false },
                     React.createElement("textarea", { readOnly: true, value: positionstext, className: "w-full h-[150px] border border-[#D8D4C8] rounded-md px-3 py-2 text-[12.5px] font-['IBM_Plex_Mono'] text-[#1B1F24] bg-[#F5F4EF] outline-none resize-none" }),
-                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")),
+                    React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(positionstext); }, className: "mt-2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#1B1F24] text-white text-[13px] font-medium hover:bg-[#333] transition-colors" }, "Text kopieren")))),
+            tab === "abschluss" && (React.createElement("div", { className: "flex flex-col gap-4" },
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white px-4 py-3.5" },
                     React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3" },
-                        React.createElement("label", { className: "flex flex-col gap-1" },
-                            React.createElement("span", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium" }, "Kunde"),
-                            React.createElement("input", { value: kunde, onChange: (e) => setKunde(e.target.value), placeholder: "Name", className: "border border-[#D8D4C8] rounded-md px-2.5 py-1.5 text-[14px] outline-none focus:border-[#E8963B]" })),
+                        React.createElement(KundenAuswahl, { value: kunde, onChange: setKunde }),
                         React.createElement(Num, { label: "Menge", value: menge, onChange: setMenge, unit: "Stk" })),
-                    React.createElement("button", { onClick: addToListe, className: "w-full flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md bg-[#E8963B] text-white text-[13px] font-semibold hover:bg-[#d6852e] transition-colors" },
-                        React.createElement(Plus, { size: 15 }),
-                        " Zur Positionsliste hinzuf\u00FCgen")))),
+                    eingabeUnvollstaendig && (React.createElement("p", { className: "text-[11.5px] text-[#C0392B] mb-2" }, "Bitte Elementbreite und Elementh\u00F6he in \u201EKonfiguration\" eintragen.")),
+                    React.createElement("div", { className: "flex gap-2" },
+                        React.createElement("button", { onClick: addToListe, disabled: eingabeUnvollstaendig, className: `flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md text-white text-[13px] font-semibold transition-colors ${eingabeUnvollstaendig ? "bg-[#D8D4C8] cursor-not-allowed" : "bg-[#E8963B] hover:bg-[#d6852e]"}` },
+                            React.createElement(Plus, { size: 15 }),
+                            " ",
+                            bearbeitungsId ? "Änderungen speichern" : "Zur Positionsliste hinzufügen"),
+                        bearbeitungsId && (React.createElement("button", { onClick: zuruecksetzen, className: "px-3.5 py-2 rounded-md border border-[#D8D4C8] text-[#5B6472] text-[13px] font-medium" }, "Abbrechen")))))),
             tab === "liste" && (React.createElement("div", { className: "flex flex-col gap-3" }, liste.length === 0 ? (React.createElement("div", { className: "text-center py-10 text-[13px] text-[#8A8F98] border border-dashed border-[#D8D4C8] rounded-lg" }, "Noch keine Positionen. Unter \u201EKalkulation\" hinzuf\u00FCgen.")) : (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white overflow-hidden overflow-x-auto" },
                     React.createElement("table", { className: "w-full text-[12.5px]" },
@@ -4238,6 +4677,8 @@ function KisKonfigurator({ onZurueck }) {
                                     (i.preisBrutto * i.menge).toFixed(2),
                                     " \u20AC"),
                                 React.createElement("td", { className: "px-2 py-2 text-right whitespace-nowrap" },
+                                    React.createElement("button", { onClick: () => ladeZumBearbeiten(i), className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Bearbeiten" },
+                                        React.createElement(Pencil, { size: 14 })),
                                     React.createElement("button", { onClick: () => { var _a; return (_a = navigator.clipboard) === null || _a === void 0 ? void 0 : _a.writeText(i.positionstext); }, className: "text-[#8A8F98] hover:text-[#1B1F24] mr-2", title: "Positionstext kopieren" },
                                         React.createElement(Copy, { size: 14 })),
                                     React.createElement("button", { onClick: () => removeFromListe(i.id), className: "text-[#8A8F98] hover:text-[#C0392B]" },
@@ -4254,6 +4695,187 @@ function KisKonfigurator({ onZurueck }) {
                         gesamtBrutto.toFixed(2),
                         " \u20AC")))))))));
 }
+// ============================================================
+// KUNDENÜBERSICHT — führt Positionen aus allen 6 Produktlisten pro Kunde zusammen
+// ============================================================
+function positionKurzbeschreibung(produktKey, item) {
+    switch (produktKey) {
+        case "positionsliste_v2":
+            return `${item.breite}×${item.hoehe}mm · ${item.system} · ${item.colorLabel}`;
+        case "spannrahmen_liste_v1":
+            return `${item.lichteBreite}×${item.lichteHoehe}mm · ${item.profilLabel}`;
+        case "drehtuer_liste_v1":
+            return `${item.lichteBreite}×${item.lichteHoehe}mm · ${item.ausfuehrungLabel}`;
+        case "schiebetuer_liste_v1":
+            return `${item.rahmenbreite}×${item.rahmenhoehe}mm · ${item.ausfuehrungLabel}`;
+        case "lichtschacht_liste_v1":
+            return `${item.rahmenbreite}×${item.rahmenhoehe}mm · ${item.ausfuehrungLabel}`;
+        case "kis_liste_v1":
+            return `${item.eb}×${item.eh}mm · ${item.mechanikLabel}`;
+        default:
+            return "—";
+    }
+}
+// ============================================================
+// EINSTELLUNGEN (Produktion/Kalkulation ein-/ausblenden) — eigenes Passwort, getrennt vom App-Passwort
+// ============================================================
+function EinstellungenPasswortabfrage({ onUnlock, onZurueck }) {
+    const [pw, setPw] = useState("");
+    const [error, setError] = useState(false);
+    const [checking, setChecking] = useState(false);
+    const submit = async (e) => {
+        e.preventDefault();
+        setChecking(true);
+        const hash = await sha256Hex(pw);
+        if (hash === EINSTELLUNGEN_PASSWORD_HASH) {
+            onUnlock();
+        }
+        else {
+            setError(true);
+            setChecking(false);
+        }
+    };
+    return (React.createElement("div", { className: "min-h-screen w-full flex items-center justify-center px-4", style: { background: "#1B1F24" } },
+        React.createElement("style", null, `* { font-family: 'Inter', -apple-system, sans-serif; }`),
+        React.createElement("form", { onSubmit: submit, className: "bg-white rounded-xl p-6 w-full max-w-[320px] flex flex-col gap-3 items-center shadow" },
+            React.createElement("img", { src: LOGO_IMAGE, alt: "TH Sonnenschutz", className: "w-16 h-16" }),
+            React.createElement("h1", { className: "text-[15px] font-semibold text-[#1B1F24] text-center" }, "Einstellungen"),
+            React.createElement("p", { className: "text-[12px] text-[#8A8F98] text-center -mt-1" }, "Separates Passwort \u2014 nur f\u00FCr den Inhaber"),
+            React.createElement("input", { type: "password", value: pw, onChange: (e) => { setPw(e.target.value); setError(false); }, placeholder: "Passwort", autoFocus: true, className: "w-full border border-[#D8D4C8] rounded-md px-3 py-2 text-[15px] outline-none focus:border-[#E8963B] text-center" }),
+            error && React.createElement("p", { className: "text-[12px] text-[#C0392B]" }, "Falsches Passwort."),
+            React.createElement("button", { type: "submit", disabled: checking || !pw, className: "w-full bg-[#E8963B] disabled:opacity-50 text-white rounded-md py-2.5 text-[14px] font-semibold" }, checking ? "Prüfe …" : "Öffnen"),
+            React.createElement("button", { type: "button", onClick: onZurueck, className: "text-[12px] text-[#8A8F98] hover:text-[#1B1F24]" }, "Abbrechen"))));
+}
+function Einstellungen({ onZurueck }) {
+    const [entsperrt, setEntsperrt] = useState(false);
+    const [einstellungen, setEinstellungenState] = useState(DEFAULT_EINSTELLUNGEN);
+    useEffect(() => { loadEinstellungen(setEinstellungenState); }, []);
+    const umschalten = (key) => {
+        const next = Object.assign(Object.assign({}, einstellungen), { [key]: !einstellungen[key] });
+        setEinstellungenState(next);
+        saveEinstellungen(next);
+    };
+    if (!entsperrt)
+        return React.createElement(EinstellungenPasswortabfrage, { onUnlock: () => setEntsperrt(true), onZurueck });
+    return (React.createElement("div", { className: "min-h-screen w-full overflow-x-hidden", style: { background: "#F5F4EF" } },
+        React.createElement("style", null, `* { font-family: 'Inter', -apple-system, sans-serif; } .font-oswald { font-family: 'Oswald', sans-serif; }`),
+        React.createElement("div", { className: "max-w-5xl mx-auto px-4 py-6 md:py-10" },
+            React.createElement("button", { onClick: onZurueck, className: "text-[12px] text-[#5B6472] hover:text-[#1B1F24] mb-3 flex items-center gap-1" }, "\u2190 Andere Produkte"),
+            React.createElement("div", { className: "mb-6 md:mb-8 flex items-center gap-3" },
+                React.createElement("img", { src: LOGO_IMAGE, alt: "TH Sonnenschutz Logo", className: "w-12 h-12 md:w-14 md:h-14 shrink-0" }),
+                React.createElement("div", { className: "min-w-0" },
+                    React.createElement("div", { className: "text-[11px] tracking-[0.2em] uppercase text-[#E8963B] font-oswald font-semibold mb-1" }, "TH Sonnenschutz \u2014 Produktion"),
+                    React.createElement("h1", { className: "text-[26px] md:text-[32px] font-oswald font-semibold text-[#1B1F24] leading-tight" }, "Einstellungen"),
+                    React.createElement("p", { className: "text-[13px] text-[#5B6472] mt-1" }, "Gilt f\u00FCr alle 6 Produkte gleichzeitig."))),
+            React.createElement("div", { className: "flex flex-col gap-3" },
+                React.createElement("div", { className: "border border-[#D8D4C8] rounded-lg bg-white px-4 py-3.5 flex items-center justify-between" },
+                    React.createElement("div", null,
+                        React.createElement("div", { className: "text-[14px] font-medium text-[#1B1F24]" }, "Produktion-Tab sichtbar"),
+                        React.createElement("p", { className: "text-[12px] text-[#8A8F98]" }, "Zuschnittma\u00DFe & Artikelnummern f\u00FCr alle Mitarbeiter")),
+                    React.createElement("button", { onClick: () => umschalten("produktionSichtbar"), className: `w-12 h-7 rounded-full transition-colors relative shrink-0 ${einstellungen.produktionSichtbar ? "bg-[#E8963B]" : "bg-[#D8D4C8]"}` },
+                        React.createElement("span", { className: `absolute top-1 w-5 h-5 rounded-full bg-white transition-all ${einstellungen.produktionSichtbar ? "left-6" : "left-1"}` }))),
+                React.createElement("div", { className: "border border-[#D8D4C8] rounded-lg bg-white px-4 py-3.5 flex items-center justify-between" },
+                    React.createElement("div", null,
+                        React.createElement("div", { className: "text-[14px] font-medium text-[#1B1F24]" }, "Kalkulation-Tab sichtbar"),
+                        React.createElement("p", { className: "text-[12px] text-[#8A8F98]" }, "Einkaufspreise, Kosten & Marge f\u00FCr alle Mitarbeiter")),
+                    React.createElement("button", { onClick: () => umschalten("kalkulationSichtbar"), className: `w-12 h-7 rounded-full transition-colors relative shrink-0 ${einstellungen.kalkulationSichtbar ? "bg-[#E8963B]" : "bg-[#D8D4C8]"}` },
+                        React.createElement("span", { className: `absolute top-1 w-5 h-5 rounded-full bg-white transition-all ${einstellungen.kalkulationSichtbar ? "left-6" : "left-1"}` }))),
+                React.createElement("p", { className: "text-[11px] text-[#8A8F98] mt-2" }, "Kunde zuweisen & Positionsliste bleiben immer sichtbar \u2014 auch wenn Produktion/Kalkulation ausgeblendet sind.")))));
+}
+function KundenUebersicht({ onZurueck, onBearbeiten }) {
+    const [kunden, setKunden] = useState([]);
+    const [ausgewaehlt, setAusgewaehlt] = useState(null);
+    const [positionen, setPositionen] = useState([]); // [{produktKey, produktLabel, item}]
+    const [ladeStatus, setLadeStatus] = useState("idle");
+    useEffect(() => { loadKunden(setKunden); }, []);
+    const ladePositionen = async (kundeName) => {
+        var _a;
+        setLadeStatus("laedt");
+        const alle = [];
+        for (const { key, label } of PRODUKT_LISTEN_KEYS) {
+            try {
+                const r = await ((_a = window.storage) === null || _a === void 0 ? void 0 : _a.get(key));
+                if (r === null || r === void 0 ? void 0 : r.value) {
+                    const liste = JSON.parse(r.value);
+                    for (const item of liste) {
+                        if (item.kunde === kundeName)
+                            alle.push({ produktKey: key, produktLabel: label, item });
+                    }
+                }
+            }
+            catch (_b) { }
+        }
+        setPositionen(alle);
+        setLadeStatus("fertig");
+    };
+    const kundeWaehlen = (name) => { setAusgewaehlt(name); ladePositionen(name); };
+    const gesamtEk = positionen.reduce((s, p) => { var _a; return s + ((_a = p.item.preisEinzelEk) !== null && _a !== void 0 ? _a : 0) * p.item.menge; }, 0);
+    const gesamtBrutto = positionen.reduce((s, p) => { var _a; return s + ((_a = p.item.preisBrutto) !== null && _a !== void 0 ? _a : 0) * p.item.menge; }, 0);
+    const alleDrucken = () => {
+        const zeilen = positionen.map((p) => [
+            `${p.produktLabel} — ${positionKurzbeschreibung(p.produktKey, p.item)}`,
+            `${p.item.menge}× — ${(p.item.preisBrutto * p.item.menge).toFixed(2)} € brutto`,
+        ]);
+        zeilen.push(["— GESAMT —", `${gesamtBrutto.toFixed(2)} € brutto`]);
+        druckeUebersicht(`Kundenauftrag — ${ausgewaehlt}`, ausgewaehlt, zeilen, `${positionen.length} Position(en) über alle Produkte.`);
+    };
+    return (React.createElement("div", { className: "min-h-screen w-full overflow-x-hidden", style: { background: "#F5F4EF" } },
+        React.createElement("style", null, `* { font-family: 'Inter', -apple-system, sans-serif; } .font-oswald { font-family: 'Oswald', sans-serif; }`),
+        React.createElement("div", { className: "max-w-5xl mx-auto px-4 py-6 md:py-10" },
+            React.createElement("button", { onClick: ausgewaehlt ? () => { setAusgewaehlt(null); setPositionen([]); } : onZurueck, className: "text-[12px] text-[#5B6472] hover:text-[#1B1F24] mb-3 flex items-center gap-1" },
+                "\u2190 ",
+                ausgewaehlt ? "Alle Kunden" : "Andere Produkte"),
+            React.createElement("div", { className: "mb-6 md:mb-8 flex items-center gap-3" },
+                React.createElement("img", { src: LOGO_IMAGE, alt: "TH Sonnenschutz Logo", className: "w-12 h-12 md:w-14 md:h-14 shrink-0" }),
+                React.createElement("div", { className: "min-w-0" },
+                    React.createElement("div", { className: "text-[11px] tracking-[0.2em] uppercase text-[#E8963B] font-oswald font-semibold mb-1" }, "TH Sonnenschutz \u2014 Produktion"),
+                    React.createElement("h1", { className: "text-[26px] md:text-[32px] font-oswald font-semibold text-[#1B1F24] leading-tight" }, "Kunden\u00FCbersicht"),
+                    React.createElement("p", { className: "text-[13px] text-[#5B6472] mt-1" }, "Alle Produkte eines Kunden auf einen Blick \u2014 produkt\u00FCbergreifend."))),
+            !ausgewaehlt && (React.createElement("div", { className: "flex flex-col gap-2" }, kunden.length === 0 ? (React.createElement("div", { className: "text-center py-10 text-[13px] text-[#8A8F98] border border-dashed border-[#D8D4C8] rounded-lg" }, "Noch keine Kunden angelegt. Lege einen Kunden bei \u201EKunde\" in einem der Konfiguratoren an (+ Neuer Kunde\u2026).")) : kunden.map((k) => (React.createElement("button", { key: k, onClick: () => kundeWaehlen(k), className: "text-left border border-[#D8D4C8] rounded-lg bg-white px-4 py-3 hover:border-[#E8963B] transition-colors" },
+                React.createElement("span", { className: "text-[15px] font-medium text-[#1B1F24]" }, k)))))),
+            ausgewaehlt && (React.createElement("div", { className: "flex flex-col gap-4" },
+                React.createElement("h2", { className: "text-[19px] font-oswald font-semibold text-[#1B1F24]" }, ausgewaehlt),
+                ladeStatus === "laedt" && React.createElement("p", { className: "text-[13px] text-[#8A8F98]" }, "Lade Positionen\u2026"),
+                ladeStatus === "fertig" && positionen.length === 0 && (React.createElement("div", { className: "text-center py-10 text-[13px] text-[#8A8F98] border border-dashed border-[#D8D4C8] rounded-lg" }, "F\u00FCr diesen Kunden sind noch keine Positionen angelegt.")),
+                positionen.length > 0 && (React.createElement(React.Fragment, null,
+                    React.createElement("div", { className: "border border-[#E2DFD3] rounded-lg bg-white overflow-hidden overflow-x-auto" },
+                        React.createElement("table", { className: "w-full text-[12.5px]" },
+                            React.createElement("thead", null,
+                                React.createElement("tr", { className: "bg-[#F0EEE4] text-[10.5px] uppercase tracking-wide text-[#5B6472]" },
+                                    React.createElement("th", { className: "text-left px-3 py-2 font-medium" }, "Produkt"),
+                                    React.createElement("th", { className: "text-left px-3 py-2 font-medium" }, "Beschreibung"),
+                                    React.createElement("th", { className: "text-right px-3 py-2 font-medium" }, "Menge"),
+                                    React.createElement("th", { className: "text-right px-3 py-2 font-medium" }, "EK"),
+                                    React.createElement("th", { className: "text-right px-3 py-2 font-medium" }, "VK (brutto)"),
+                                    React.createElement("th", { className: "px-2 py-2" }))),
+                            React.createElement("tbody", null, positionen.map((p, i) => {
+                                var _a;
+                                return (React.createElement("tr", { key: i, className: "border-t border-[#E2DFD3]" },
+                                    React.createElement("td", { className: "px-3 py-2 text-[#1B1F24] font-medium" }, p.produktLabel),
+                                    React.createElement("td", { className: "px-3 py-2 text-[#5B6472]" }, positionKurzbeschreibung(p.produktKey, p.item)),
+                                    React.createElement("td", { className: "px-3 py-2 text-right font-['IBM_Plex_Mono']" }, p.item.menge),
+                                    React.createElement("td", { className: "px-3 py-2 text-right font-['IBM_Plex_Mono'] text-[#5B6472]" },
+                                        (((_a = p.item.preisEinzelEk) !== null && _a !== void 0 ? _a : 0) * p.item.menge).toFixed(2),
+                                        " \u20AC"),
+                                    React.createElement("td", { className: "px-3 py-2 text-right font-['IBM_Plex_Mono'] text-[#1B1F24]" },
+                                        (p.item.preisBrutto * p.item.menge).toFixed(2),
+                                        " \u20AC"),
+                                    React.createElement("td", { className: "px-2 py-2 text-right whitespace-nowrap" },
+                                        React.createElement("button", { onClick: () => { var _a; return onBearbeiten((_a = PRODUKT_LISTEN_KEYS.find((pl) => pl.key === p.produktKey)) === null || _a === void 0 ? void 0 : _a.produktRoute, p.item.id); }, className: "text-[#8A8F98] hover:text-[#1B1F24]", title: "Bearbeiten" },
+                                            React.createElement(Pencil, { size: 14 })))));
+                            })))),
+                    React.createElement("div", { className: "flex justify-end items-center gap-4 px-1" },
+                        React.createElement("span", { className: "text-[13px] text-[#5B6472]" },
+                            "EK gesamt: ",
+                            React.createElement("span", { className: "font-['IBM_Plex_Mono'] text-[#1B1F24]" },
+                                gesamtEk.toFixed(2),
+                                " \u20AC")),
+                        React.createElement("span", { className: "text-[13px] text-[#5B6472]" }, "Gesamt (brutto)"),
+                        React.createElement("span", { className: "text-[18px] font-['IBM_Plex_Mono'] font-semibold text-[#1B1F24]" },
+                            gesamtBrutto.toFixed(2),
+                            " \u20AC")),
+                    React.createElement("button", { onClick: alleDrucken, className: "flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-md bg-[#1B1F24] text-white text-[13px] font-semibold hover:bg-[#333] transition-colors" }, "Kompletten Kundenauftrag drucken"))))))));
+}
 // --- Produkt-Hub (Hauptseite) ---
 const PRODUKTE = [
     { id: "rollladen", label: "Rollladen", beschreibung: "Konfiguration, Zuschnitt & Kalkulation nach heroal Rollladensysteme", verfuegbar: true },
@@ -4263,7 +4885,7 @@ const PRODUKTE = [
     { id: "lichtschacht", label: "Lichtschachtabdeckung", beschreibung: "heroal IS Lichtschachtabdeckung", verfuegbar: true },
     { id: "kis", label: "IS KIS", beschreibung: "Insektengitter Rollo (heroal IS Katalog S. 218-219)", verfuegbar: true },
 ];
-function Hauptseite({ onSelect }) {
+function Hauptseite({ onSelect, onKunden, onEinstellungen, aktiverKunde, onKundeSetzen, onKundeFertig }) {
     return (React.createElement("div", { className: "min-h-screen w-full overflow-x-hidden", style: { background: "#F5F4EF" } },
         React.createElement("style", null, `* { font-family: 'Inter', -apple-system, sans-serif; } .font-oswald { font-family: 'Oswald', sans-serif; }`),
         React.createElement("div", { className: "max-w-5xl mx-auto px-4 py-8 md:py-14" },
@@ -4272,7 +4894,22 @@ function Hauptseite({ onSelect }) {
                 React.createElement("div", null,
                     React.createElement("div", { className: "text-[11px] tracking-[0.2em] uppercase text-[#E8963B] font-oswald font-semibold mb-1" }, "TH Sonnenschutz"),
                     React.createElement("h1", { className: "text-[26px] md:text-[32px] font-oswald font-semibold text-[#1B1F24] leading-tight" }, "Produkt w\u00E4hlen"))),
-            React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4" }, PRODUKTE.map((p) => (React.createElement("button", { key: p.id, onClick: () => p.verfuegbar && onSelect(p.id), disabled: !p.verfuegbar, className: `text-left border rounded-xl p-5 transition-colors ${p.verfuegbar ? "border-[#D8D4C8] bg-white hover:border-[#E8963B] cursor-pointer" : "border-[#E2DFD3] bg-[#F0EEE4] opacity-60 cursor-not-allowed"}` },
+            aktiverKunde ? (React.createElement("div", { className: "border-2 border-[#E8963B] rounded-xl bg-[#FFF8EF] p-5 mb-6" },
+                React.createElement("div", { className: "text-[11px] uppercase tracking-wide text-[#B96A16] font-semibold mb-1" }, "Aktueller Kunde"),
+                React.createElement("div", { className: "flex items-center justify-between gap-3 mb-2" },
+                    React.createElement("span", { className: "text-[20px] font-oswald font-semibold text-[#1B1F24]" }, aktiverKunde),
+                    React.createElement("button", { onClick: onKundeFertig, className: "shrink-0 px-3 py-1.5 rounded-md border border-[#D8D4C8] bg-white text-[#5B6472] text-[12.5px] font-medium hover:border-[#E8963B]" }, "Fertig \u2014 neuer Kunde")),
+                React.createElement("p", { className: "text-[13px] text-[#8A6438]" },
+                    "W\u00E4hle unten ein Produkt \u2014 es wird automatisch ",
+                    aktiverKunde,
+                    " zugeordnet. Beliebig viele Produkte nacheinander hinzuf\u00FCgen m\u00F6glich."))) : (React.createElement("div", { className: "border border-[#D8D4C8] rounded-xl bg-white p-5 mb-6" },
+                React.createElement("div", { className: "text-[11px] uppercase tracking-wide text-[#5B6472] font-medium mb-2" }, "Zuerst Kunde anlegen oder w\u00E4hlen"),
+                React.createElement(KundenAuswahl, { value: "", onChange: onKundeSetzen }))),
+            React.createElement("button", { onClick: onKunden, className: "w-full text-left border-2 border-[#1B1F24] rounded-xl bg-[#1B1F24] p-5 mb-6 hover:bg-[#333] transition-colors" },
+                React.createElement("span", { className: "text-[17px] font-oswald font-semibold text-white block mb-1" }, "\uD83D\uDC64 Kunden\u00FCbersicht"),
+                React.createElement("p", { className: "text-[13px] text-[#B8BEC7]" }, "Alle Positionen eines Kunden aus allen Produkten zusammen ansehen und drucken")),
+            React.createElement("button", { onClick: onEinstellungen, className: "text-[12px] text-[#8A8F98] hover:text-[#5B6472] mb-6 flex items-center gap-1" }, "\u2699 Einstellungen (passwortgesch\u00FCtzt)"),
+            React.createElement("div", { className: `grid grid-cols-1 sm:grid-cols-2 gap-4 ${!aktiverKunde ? "opacity-50 pointer-events-none" : ""}` }, PRODUKTE.map((p) => (React.createElement("button", { key: p.id, onClick: () => p.verfuegbar && aktiverKunde && onSelect(p.id), disabled: !p.verfuegbar || !aktiverKunde, className: `text-left border rounded-xl p-5 transition-colors ${p.verfuegbar ? "border-[#D8D4C8] bg-white hover:border-[#E8963B] cursor-pointer" : "border-[#E2DFD3] bg-[#F0EEE4] opacity-60 cursor-not-allowed"}` },
                 React.createElement("div", { className: "flex items-center justify-between mb-1.5" },
                     React.createElement("span", { className: "text-[17px] font-oswald font-semibold text-[#1B1F24]" }, p.label),
                     !p.verfuegbar && React.createElement("span", { className: "text-[10px] uppercase tracking-wide bg-[#D8D4C8] text-[#5B6472] px-2 py-0.5 rounded-full" }, "Bald")),
@@ -4287,22 +4924,36 @@ function App() {
             return false;
         }
     });
-    const [produkt, setProdukt] = useState(null); // null = Hauptseite | 'rollladen' | 'spannrahmen'
+    const [produkt, setProdukt] = useState(null); // null = Hauptseite | 'rollladen' | 'spannrahmen' | 'kunden'
+    const [editZiel, setEditZiel] = useState(null); // { produkt, id } — von Kundenübersicht ausgelöste Bearbeitung
+    const [aktiverKunde, setAktiverKunde] = useState("");
+    useEffect(() => { loadAktiverKunde(setAktiverKunde); }, []);
+    const kundeSetzen = (name) => { setAktiverKunde(name); saveAktiverKunde(name); };
+    const kundeFertig = () => { setAktiverKunde(""); saveAktiverKunde(""); };
+    const [einstellungen, setEinstellungen] = useState(DEFAULT_EINSTELLUNGEN);
+    useEffect(() => { loadEinstellungen(setEinstellungen); }, [produkt]); // bei jedem Produktwechsel neu laden, falls im Einstellungen-Bereich geändert
     if (!unlocked)
         return React.createElement(PasswordGate, { onUnlock: () => setUnlocked(true) });
+    const bearbeiteAus = (produktRoute, id) => { setEditZiel({ produkt: produktRoute, id }); setProdukt(produktRoute); };
+    const editRequestFuer = (name) => (editZiel && editZiel.produkt === name ? { id: editZiel.id } : null);
+    const onEditConsumed = () => setEditZiel(null);
+    if (produkt === "kunden")
+        return React.createElement(KundenUebersicht, { onZurueck: () => setProdukt(null), onBearbeiten: bearbeiteAus });
+    if (produkt === "einstellungen")
+        return React.createElement(Einstellungen, { onZurueck: () => setProdukt(null) });
     if (produkt === "rollladen")
-        return React.createElement(RollladenKonfigurator, { onZurueck: () => setProdukt(null) });
+        return React.createElement(RollladenKonfigurator, { onZurueck: () => setProdukt(null), editRequest: editRequestFuer("rollladen"), onEditConsumed, defaultKunde: aktiverKunde, einstellungen });
     if (produkt === "spannrahmen")
-        return React.createElement(SpannrahmenKonfigurator, { onZurueck: () => setProdukt(null) });
+        return React.createElement(SpannrahmenKonfigurator, { onZurueck: () => setProdukt(null), editRequest: editRequestFuer("spannrahmen"), onEditConsumed, defaultKunde: aktiverKunde, einstellungen });
     if (produkt === "drehtuer")
-        return React.createElement(DrehtuerKonfigurator, { onZurueck: () => setProdukt(null) });
+        return React.createElement(DrehtuerKonfigurator, { onZurueck: () => setProdukt(null), editRequest: editRequestFuer("drehtuer"), onEditConsumed, defaultKunde: aktiverKunde, einstellungen });
     if (produkt === "schiebetuer")
-        return React.createElement(SchiebetuerKonfigurator, { onZurueck: () => setProdukt(null) });
+        return React.createElement(SchiebetuerKonfigurator, { onZurueck: () => setProdukt(null), editRequest: editRequestFuer("schiebetuer"), onEditConsumed, defaultKunde: aktiverKunde, einstellungen });
     if (produkt === "lichtschacht")
-        return React.createElement(LichtschachtKonfigurator, { onZurueck: () => setProdukt(null) });
+        return React.createElement(LichtschachtKonfigurator, { onZurueck: () => setProdukt(null), editRequest: editRequestFuer("lichtschacht"), onEditConsumed, defaultKunde: aktiverKunde, einstellungen });
     if (produkt === "kis")
-        return React.createElement(KisKonfigurator, { onZurueck: () => setProdukt(null) });
-    return React.createElement(Hauptseite, { onSelect: setProdukt });
+        return React.createElement(KisKonfigurator, { onZurueck: () => setProdukt(null), editRequest: editRequestFuer("kis"), onEditConsumed, defaultKunde: aktiverKunde, einstellungen });
+    return React.createElement(Hauptseite, { onSelect: setProdukt, onKunden: () => setProdukt("kunden"), onEinstellungen: () => setProdukt("einstellungen"), aktiverKunde, onKundeSetzen: kundeSetzen, onKundeFertig: kundeFertig });
 }
 
 ReactDOM.render(React.createElement(App), document.getElementById("root"));
